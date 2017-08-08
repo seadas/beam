@@ -983,21 +983,19 @@ public class StatisticsCriteriaPanel {
 
         gbc.weighty = 0;
         gbc.insets.top = 5;
-        panel.add(includeHistogramStatsCheckBox, gbc);
-
-
+        panel.add(includeBinningInfoCheckBox, gbc);
 
         gbc.insets.top = 0;
         gbc.gridy += 1;
         panel.add(includeMedianCheckBox, gbc);
 
-        gbc.gridy += 1;
-        panel.add(includeBinningInfoCheckBox, gbc);
-
-
 
         gbc.gridy += 1;
         panel.add(thresholdsPanel, gbc);
+
+        gbc.gridy += 1;
+        panel.add(includeHistogramStatsCheckBox, gbc);
+
 
 
         gbc.gridy += 1;
