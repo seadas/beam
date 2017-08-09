@@ -45,7 +45,7 @@ public class StatisticsToolView extends AbstractStatisticsToolView {
     public static final String PARAM_KEY_PERCENT_THRESHOLDS = "statistics.percentThresholds";
     public static final String PARAM_DEFVAL_PERCENT_THRESHOLDS = "80,85,90,95,98";
 
-    public static final String PARAM_LABEL_NUM_BINS = "#Bins";
+    public static final String PARAM_LABEL_NUM_BINS = "Total Bins";
     public static final String PARAM_KEY_NUM_BINS = "statistics.numBins";
     public static final int PARAM_DEFVAL_NUM_BINS = 1000;
     public static final int PARAM_MINVAL_NUM_BINS = 1;
@@ -184,7 +184,7 @@ public class StatisticsToolView extends AbstractStatisticsToolView {
     public static final String PARAM_KEY_BIN_WIDTH = "statistics.binWidthMax";
     public static final double PARAM_DEFVAL_BIN_WIDTH = Double.NaN;
 
-    public static final String PARAM_LABEL_BIN_WIDTH_ENABLED = "Set #Bins from Bin Width";
+    public static final String PARAM_LABEL_BIN_WIDTH_ENABLED = "Set Total Bins from Bin Width";
     public static final String PARAM_KEY_BIN_WIDTH_ENABLED = "statistics.binWidthEnabled";
     public static final boolean PARAM_DEFVAL_BIN_WIDTH_ENABLED = false;
 
