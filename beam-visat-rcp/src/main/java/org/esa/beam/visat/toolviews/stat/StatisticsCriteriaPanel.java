@@ -91,7 +91,7 @@ public class StatisticsCriteriaPanel {
 
     // "Text" Tab Variables and Components
 
-    private static final int COL_WIDTH_DEFAULT = 10;
+    private static final int COL_WIDTH_DEFAULT = StatisticsToolView.PARAM_DEFVAL_SPREADSHEET_COL_WIDTH;
     private int colCharWidth = COL_WIDTH_DEFAULT;
     private TextFieldContainer spreadsheetColWidthTextfieldContainer = null;
 

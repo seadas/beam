@@ -145,7 +145,7 @@ public class StatisticsToolView extends AbstractStatisticsToolView {
 
     public static final String PARAM_KEY_SPREADSHEET_COL_WIDTH = "statistics.spreadsheetColWidth";
     public static final String PARAM_LABEL_SPREADSHEET_COL_WIDTH = "Column Width (Spreadsheet)";
-    public static final int PARAM_DEFVAL_SPREADSHEET_COL_WIDTH = 10;
+    public static final int PARAM_DEFVAL_SPREADSHEET_COL_WIDTH = 0;
     public static final int PARAM_MINVAL_SPREADSHEET_COL_WIDTH = 0;
     public static final int PARAM_MAXVAL_SPREADSHEET_COL_WIDTH = 50;
 

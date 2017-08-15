@@ -164,7 +164,7 @@ class StatisticsSpreadsheetPagePanel extends PagePanel {
                 if (spreadsheetCell != null && StringUtils.isNotNullAndNotEmpty(spreadsheetCell.toString())) {
 
                     if (spreadsheetCell instanceof Float || spreadsheetCell instanceof  Double) {
-                        if (statisticsCriteriaPanel.colCharWidth() < 8) {
+                        if (statisticsCriteriaPanel.colCharWidth() < 10) {
                             String valueFormatted = getFormattedValue((Number) spreadsheetCell);
                             currWidth = fm.stringWidth(valueFormatted.trim()) + bufferWidth;
                         } else {
@@ -172,7 +172,11 @@ class StatisticsSpreadsheetPagePanel extends PagePanel {
                         }
 
                     } else {
-                         currWidth = fm.stringWidth(spreadsheetCell.toString()) + bufferWidth;
+                        if (statisticsCriteriaPanel.colCharWidth() < 10) {
+                            currWidth = fm.stringWidth(spreadsheetCell.toString()) + bufferWidth;
+                        } else {
+                            currWidth = colPreferredWidthData;
+                        }
                     }
 
                     if (currWidth > 0 && currWidth > width) {
