@@ -1136,11 +1136,13 @@ public class VisatPreferencesDialog extends ConfigDialog {
             addParamToPane(fieldsPane, param, gbcFields);
             gbcFields.gridy++;
 
-            param = getConfigParam(StatisticsToolView.PARAM_KEY_BINNING_INFO_ENABLED);
+
+
+            param = getConfigParam(StatisticsToolView.PARAM_KEY_PERCENT_THRESHOLDS);
             addParamToPane(fieldsPane, param, gbcFields);
             gbcFields.gridy++;
 
-            param = getConfigParam(StatisticsToolView.PARAM_KEY_PERCENT_THRESHOLDS);
+            param = getConfigParam(StatisticsToolView.PARAM_KEY_BINNING_INFO_ENABLED);
             addParamToPane(fieldsPane, param, gbcFields);
             gbcFields.gridy++;
 

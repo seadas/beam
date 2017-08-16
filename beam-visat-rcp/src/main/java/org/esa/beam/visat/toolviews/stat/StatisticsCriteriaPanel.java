@@ -1012,11 +1012,13 @@ public class StatisticsCriteriaPanel {
         gbc.gridy += 1;
         panel.add(thresholdsPanel, gbc);
 
-        gbc.gridy += 1;
-        panel.add(includeHistogramStatsCheckBox, gbc);
 
         gbc.gridy += 1;
         panel.add(includeBinningInfoCheckBox, gbc);
+
+        gbc.gridy += 1;
+        panel.add(includeHistogramStatsCheckBox, gbc);
+
 
 
         gbc.gridy += 1;
