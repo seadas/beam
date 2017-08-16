@@ -58,6 +58,10 @@ public class StatisticsToolView extends AbstractStatisticsToolView {
     public static final String PARAM_KEY_MEDIAN_ENABLED = "statistics.median.enabled";
     public static final boolean PARAM_DEFVAL_MEDIAN_ENABLED = true;
 
+    public static final String PARAM_LABEL_TOTAL_PIXEL_COUNT_ENABLED = "Include Total Pixel Count";
+    public static final String PARAM_KEY_TOTAL_PIXEL_COUNT_ENABLED = "statistics.totalPixelCount.enabled";
+    public static final boolean PARAM_DEFVAL_TOTAL_PIXEL_COUNT_ENABLED = true;
+
     public static final String PARAM_LABEL_HISTOGRAM_STATS_ENABLED = "Include Histogram Statistics";
     public static final String PARAM_KEY_HISTOGRAM_STATS_ENABLED = "statistics.histogramStats.enabled";
     public static final boolean PARAM_DEFVAL_HISTOGRAM_STATS_ENABLED = false;

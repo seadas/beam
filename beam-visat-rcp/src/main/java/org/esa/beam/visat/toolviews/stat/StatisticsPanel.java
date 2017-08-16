@@ -27,10 +27,7 @@ import org.esa.beam.framework.ui.GridBagUtils;
 import org.esa.beam.framework.ui.UIUtils;
 import org.esa.beam.framework.ui.application.ToolView;
 import org.esa.beam.framework.ui.tool.ToolButtonFactory;
-import org.esa.beam.util.Guardian;
-import org.esa.beam.util.ProductUtils;
-import org.esa.beam.util.PropertyMap;
-import org.esa.beam.util.StringUtils;
+import org.esa.beam.util.*;
 import org.esa.beam.visat.VisatApp;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -699,24 +696,67 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
     private int computeAllStxForRaster(RasterDataNode raster, ProgressMonitor pm, final Mask[] selectedMasks, int stxIdx) {
 
         int recordCount = 0;
-        if (computePanel.isIncludeUnmasked()) {
-            computeStx(raster, pm, null, stxIdx + recordCount);
-            recordCount++;
-        }
 
-        if (selectedMasks != null) {
-            for (int i = 0; i < selectedMasks.length; i++) {
-                final Mask mask = selectedMasks[i];
+        if (raster != null) {
+            if (computePanel.isIncludeUnmasked()) {
+                computeStx(raster, pm, null, stxIdx + recordCount);
+                recordCount++;
+            }
 
-                if (mask != null) {
-                    computeStx(raster, pm, mask, stxIdx + recordCount);
-                    recordCount++;
+
+            if (selectedMasks != null) {
+                for (int i = 0; i < selectedMasks.length; i++) {
+                    final Mask mask = selectedMasks[i];
+
+                    if (mask != null) {
+                        computeStx(raster, pm, mask, stxIdx + recordCount);
+                        recordCount++;
+                    }
                 }
             }
         }
 
         return recordCount;
     }
+
+
+
+    private int getFullPixelCount(RasterDataNode raster, ProgressMonitor pm, Mask mask) {
+
+        int pixelCount = -1;
+        final Stx stx;
+        final ProgressMonitor subPm = SubProgressMonitor.create(pm, 1);
+
+        if (mask != null) {
+            stx = new StxFactory()
+                    .withHistogramBinCount(statisticsCriteriaPanel.getNumBins())
+                    .withLogHistogram(statisticsCriteriaPanel.isLogMode())
+                    .withMedian(statisticsCriteriaPanel.includeMedian())
+                    .withBinMin(statisticsCriteriaPanel.getBinMin())
+                    .withBinMax(statisticsCriteriaPanel.getBinMax())
+                    .withBinWidth(statisticsCriteriaPanel.getBinWidth())
+                    .withRoiMask(mask)
+                    .create(raster, subPm);
+
+
+        } else {
+            stx = new StxFactory()
+                    .withHistogramBinCount(statisticsCriteriaPanel.getNumBins())
+                    .withLogHistogram(statisticsCriteriaPanel.isLogMode())
+                    .withMedian(statisticsCriteriaPanel.includeMedian())
+                    .withBinMin(statisticsCriteriaPanel.getBinMin())
+                    .withBinMax(statisticsCriteriaPanel.getBinMax())
+                    .withBinWidth(statisticsCriteriaPanel.getBinWidth())
+                    .create(raster, subPm);
+        }
+
+
+        Histogram histogram = stx.getHistogram();
+        pixelCount = histogram.getTotals()[0];
+
+        return pixelCount;
+    }
+
 
 
     private void computeStx(RasterDataNode raster, ProgressMonitor pm, Mask mask, int stxIdx) {
@@ -748,11 +788,32 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
 
         histograms[stxIdx] = stx.getHistogram();
 
+        if (statisticsCriteriaPanel.includeTotalPixels()) {
+            addRawTotalToStx(raster, pm, mask, stx);
+        }
+
         // publish(new ComputeResult(stx1, null));
 
         JPanel statPanel = createStatPanel(stx, mask, stxIdx, raster);
         contentPanel.add(statPanel);
         updateLeftPanel();
+    }
+
+
+    // todo Danny creates a band with no no-data in order to get full pixel count
+    private void addRawTotalToStx(RasterDataNode raster, ProgressMonitor pm, Mask mask, Stx stx) {
+        Product prod = raster.getProduct();
+        final int width = prod.getSceneRasterWidth();
+        final int height = prod.getSceneRasterHeight();
+
+        String tmp = raster.getName() + "_tmpBand";
+        Band  band = new Band(tmp, ProductData.TYPE_FLOAT32, width, height);
+        prod.addBand(band);
+        band.setSourceImage(VirtualBand.createVirtualSourceImage(band, "1"));
+        RasterDataNode fullRaster = prod.getRasterDataNode(band.getName());
+        int fullPixelCount = getFullPixelCount(fullRaster, pm, mask);
+        prod.removeBand(band);
+        stx.setRawTotal(fullPixelCount);
     }
 
 
@@ -1077,14 +1138,36 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
 
         int size = raster.getRasterHeight() * raster.getRasterWidth();
 
+        int validPixelCount = histogram.getTotals()[0];
 
         int dataRows = 0;
 
 //                new Object[]{"RasterSize(Pixels)", size},
 //                new Object[]{"SampleSize(Pixels)", histogram.getTotals()[0]},
+
+        Object[][] totalPixels = null;
+
+        if (statisticsCriteriaPanel.includeTotalPixels()) {
+            int totalPixelCount = stx.getRawTotal();
+            double percentFilled = (totalPixelCount > 0) ? (1.0*validPixelCount/totalPixelCount) : 0;
+
+            totalPixels =  new Object[][]{
+                    new Object[]{"Pixels", stx.getRawTotal()},
+                    new Object[]{"Valid_Pixels", validPixelCount},
+                    new Object[]{"Fraction_Valid", percentFilled}
+            };
+
+        } else {
+            totalPixels =  new Object[][]{
+                    new Object[]{"Valid_Pixels", validPixelCount}
+            };
+        }
+        dataRows += totalPixels.length;
+
+
+
         Object[][] firstData =
                 new Object[][]{
-                        new Object[]{"Pixels", histogram.getTotals()[0]},
                         new Object[]{"Minimum", stx.getMinimum()},
                         new Object[]{"Maximum", stx.getMaximum()},
                         new Object[]{"Mean", stx.getMean()}
@@ -1161,6 +1244,13 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
 
         Object[][] tableData = new Object[dataRows][];
         int tableDataIdx = 0;
+
+        if (totalPixels != null) {
+            for (int i = 0; i < totalPixels.length; i++) {
+                tableData[tableDataIdx] = totalPixels[i];
+                tableDataIdx++;
+            }
+        }
 
         if (firstData != null) {
             for (int i = 0; i < firstData.length; i++) {

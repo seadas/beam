@@ -55,6 +55,7 @@ public class Stx {
     private final Histogram histogram;
 
     private final Scaling histogramScaling;
+    private  int rawTotal = -1; // optional field for adding on a total which includes no-data pixels
 
     /**
      * Constructor. Avoid using it directly. instead, use the {@link StxFactory} since the constructor may change in the future.
@@ -304,4 +305,20 @@ public class Stx {
             return FastMath.exp(LN10 * value);
         }
     }
+
+    /**
+     * @return The minimum value.
+     */
+    public int getRawTotal() {
+        return rawTotal;
+    }
+
+    /**
+     * @return The minimum value.
+     */
+    public void setRawTotal(int rawTotal) {
+        this.rawTotal = rawTotal;
+    }
+
+
 }

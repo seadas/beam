@@ -53,6 +53,9 @@ public class StatisticsCriteriaPanel {
     private JTextField percentThresholdsTextField = null;
     private JLabel percentThresholdsLabel = null;
 
+    private boolean includeTotalPixels = StatisticsToolView.PARAM_DEFVAL_TOTAL_PIXEL_COUNT_ENABLED;
+    private JCheckBox includeTotalPixelsCheckBox = null;
+
     private boolean includeMedian = StatisticsToolView.PARAM_DEFVAL_MEDIAN_ENABLED;
     private JCheckBox includeMedianCheckBox = null;
 
@@ -195,6 +198,7 @@ public class StatisticsCriteriaPanel {
 
         // Fields
         includeMedian = getPreferencesMedianEnabled();
+        includeTotalPixels = getPreferencesTotalPixelsEnabled();
         includeHistogramStats = getPreferencesHistogramStatsEnabled();
         includeFileMetaData = getPreferencesFileMetaDataEnabled();
         includeMaskMetaData = getPreferencesMaskMetaDataEnabled();
@@ -251,6 +255,7 @@ public class StatisticsCriteriaPanel {
 
 
         // Fields
+        includeTotalPixelsCheckBox.setSelected(includeTotalPixels);
         includeMedianCheckBox.setSelected(includeMedian);
         includeHistogramStatsCheckBox.setSelected(includeHistogramStats);
         includeFileMetaDataCheckBox.setSelected(includeFileMetaData);
@@ -341,6 +346,7 @@ public class StatisticsCriteriaPanel {
 
 
         // "Fields" Tab Variables and Components
+        includeTotalPixelsCheckBox = new JCheckBox(StatisticsToolView.PARAM_LABEL_TOTAL_PIXEL_COUNT_ENABLED);
         includeMedianCheckBox = new JCheckBox(StatisticsToolView.PARAM_LABEL_MEDIAN_ENABLED);
         includeHistogramStatsCheckBox = new JCheckBox(StatisticsToolView.PARAM_LABEL_HISTOGRAM_STATS_ENABLED);
         includeFileMetaDataCheckBox = new JCheckBox(StatisticsToolView.PARAM_LABEL_FILE_METADATA_ENABLED);
@@ -501,6 +507,15 @@ public class StatisticsCriteriaPanel {
         // "Fields" Tab Variables and Components
 
         textfieldHandler(percentThresholdsTextField);
+
+        includeTotalPixelsCheckBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                includeTotalPixels = includeTotalPixelsCheckBox.isSelected();
+
+            }
+        });
+
 
         includeMedianCheckBox.addItemListener(new ItemListener() {
             @Override
@@ -774,6 +789,10 @@ public class StatisticsCriteriaPanel {
         return includeMedian;
     }
 
+    public boolean includeTotalPixels() {
+        return includeTotalPixels;
+    }
+
     public boolean includeHistogramStats() {
         return includeHistogramStats;
     }
@@ -983,7 +1002,7 @@ public class StatisticsCriteriaPanel {
 
         gbc.weighty = 0;
         gbc.insets.top = 5;
-        panel.add(includeBinningInfoCheckBox, gbc);
+        panel.add(includeTotalPixelsCheckBox, gbc);
 
         gbc.insets.top = 0;
         gbc.gridy += 1;
@@ -996,6 +1015,8 @@ public class StatisticsCriteriaPanel {
         gbc.gridy += 1;
         panel.add(includeHistogramStatsCheckBox, gbc);
 
+        gbc.gridy += 1;
+        panel.add(includeBinningInfoCheckBox, gbc);
 
 
         gbc.gridy += 1;
@@ -1585,6 +1606,16 @@ public class StatisticsCriteriaPanel {
             return StatisticsToolView.PARAM_DEFVAL_MEDIAN_ENABLED;
         }
     }
+
+    public boolean getPreferencesTotalPixelsEnabled() {
+
+        if (configuration != null) {
+            return configuration.getPropertyBool(StatisticsToolView.PARAM_KEY_TOTAL_PIXEL_COUNT_ENABLED, StatisticsToolView.PARAM_DEFVAL_TOTAL_PIXEL_COUNT_ENABLED);
+        } else {
+            return StatisticsToolView.PARAM_DEFVAL_TOTAL_PIXEL_COUNT_ENABLED;
+        }
+    }
+
 
     public boolean getPreferencesHistogramStatsEnabled() {
 
