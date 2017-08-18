@@ -408,88 +408,90 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
     @Override
     protected void updateComponents() {
-        if (computePanel.isRunning()) {
-            if (swingWorker != null) {
-                swingWorker.cancel(true);
-            }
-            computePanel.setRunning(false);
-        }
-
-
-        if (!init) {
-            initComponents();
-        }
-
-
-        boolean productChanged = false;
-        boolean rasterChanged = false;
-
-        if (getProduct() != null) {
-            Product prevProduct = currProduct;
-            currProduct = getProduct();
-
-            if (currProduct != null && currProduct != prevProduct) {
-                productChanged = true;
-                fieldsInitialized = false;
-            }
-        }
-
-
-        if (getRaster() != null) {
-            RasterDataNode prevRaster = currRaster;
-            currRaster = getRaster();
-
-            if (currRaster != null && currRaster != prevRaster) {
-                rasterChanged = true;
-            }
-        }
-
-
-        if (!fieldsInitialized || productChanged || (rasterChanged && computePanel.forceUpdate)) {
-            statisticsCriteriaPanel.resetProduct();
-
-            statsSpreadsheet = null;
-
-            final RasterDataNode raster = getRaster();
-            computePanel.setRaster(raster);
-            runButton.setEnabled(raster != null);
-            contentPanel.removeAll();
-            spreadsheetPanel.removeAll();
-            resultText.setLength(0);
-
-
-            if (raster != null && raster.isStxSet() && raster.getStx().getResolutionLevel() == 0) {
-
-                //    percentThresholdsList = statisticsCriteriaPanel.getPercentThresholdsList();
-                //   resultText.append(createText(raster.getStx(), null));
-                contentPanel.add(createStatPanel(raster.getStx(), null, null, 1, getRaster()));
-
-                PagePanel pagePanel = new StatisticsSpreadsheetPagePanelQmasks(parentDialog, helpID, statisticsCriteriaPanel, statsSpreadsheet, this);
-                pagePanel.initComponents();
-                spreadsheetPanel.add(pagePanel);
-
-                //   spreadsheetPanel.add(statsSpreadsheetPanel());
-                histograms = new Histogram[]{raster.getStx().getHistogram()};
-                exportAsCsvAction = new ExportStatisticsAsCsvAction(this);
-                putStatisticsIntoVectorDataAction = new PutStatisticsIntoVectorDataAction(this);
-                exportButton.setEnabled(exportButtonEnabled);
-
-            } else {
-                contentPanel.add(new JLabel(DEFAULT_STATISTICS_TEXT));
-                exportButton.setEnabled(false);
+        if (!computePanel.isRunning()) {
+            if (computePanel.isRunning()) {
+                if (swingWorker != null) {
+                    swingWorker.cancel(true);
+                }
+                computePanel.setRunning(false);
             }
 
 
-            contentPanel.revalidate();
-            contentPanel.repaint();
-            spreadsheetScrollPane.setVisible(statisticsCriteriaPanel.showStatsSpreadSheet());
-            spreadsheetPanel.revalidate();
-            spreadsheetPanel.repaint();
-            backgroundPanel.revalidate();
-            backgroundPanel.repaint();
+            if (!init) {
+                initComponents();
+            }
 
-            if (raster != null) {
-                exportButton.setEnabled(false);
+
+            boolean productChanged = false;
+            boolean rasterChanged = false;
+
+            if (getProduct() != null) {
+                Product prevProduct = currProduct;
+                currProduct = getProduct();
+
+                if (currProduct != null && currProduct != prevProduct) {
+                    productChanged = true;
+                    fieldsInitialized = false;
+                }
+            }
+
+
+            if (getRaster() != null) {
+                RasterDataNode prevRaster = currRaster;
+                currRaster = getRaster();
+
+                if (currRaster != null && currRaster != prevRaster) {
+                    rasterChanged = true;
+                }
+            }
+
+
+            if (!fieldsInitialized || productChanged || (rasterChanged && computePanel.forceUpdate)) {
+                statisticsCriteriaPanel.resetProduct();
+
+                statsSpreadsheet = null;
+
+                final RasterDataNode raster = getRaster();
+                computePanel.setRaster(raster);
+                runButton.setEnabled(raster != null);
+                contentPanel.removeAll();
+                spreadsheetPanel.removeAll();
+                resultText.setLength(0);
+
+
+                if (raster != null && raster.isStxSet() && raster.getStx().getResolutionLevel() == 0) {
+
+                    //    percentThresholdsList = statisticsCriteriaPanel.getPercentThresholdsList();
+                    //   resultText.append(createText(raster.getStx(), null));
+                    contentPanel.add(createStatPanel(raster.getStx(), null, null, 1, getRaster()));
+
+                    PagePanel pagePanel = new StatisticsSpreadsheetPagePanelQmasks(parentDialog, helpID, statisticsCriteriaPanel, statsSpreadsheet, this);
+                    pagePanel.initComponents();
+                    spreadsheetPanel.add(pagePanel);
+
+                    //   spreadsheetPanel.add(statsSpreadsheetPanel());
+                    histograms = new Histogram[]{raster.getStx().getHistogram()};
+                    exportAsCsvAction = new ExportStatisticsAsCsvAction(this);
+                    putStatisticsIntoVectorDataAction = new PutStatisticsIntoVectorDataAction(this);
+                    exportButton.setEnabled(exportButtonEnabled);
+
+                } else {
+                    contentPanel.add(new JLabel(DEFAULT_STATISTICS_TEXT));
+                    exportButton.setEnabled(false);
+                }
+
+
+                contentPanel.revalidate();
+                contentPanel.repaint();
+                spreadsheetScrollPane.setVisible(statisticsCriteriaPanel.showStatsSpreadSheet());
+                spreadsheetPanel.revalidate();
+                spreadsheetPanel.repaint();
+                backgroundPanel.revalidate();
+                backgroundPanel.repaint();
+
+                if (raster != null) {
+                    exportButton.setEnabled(false);
+                }
             }
         }
     }
@@ -712,7 +714,8 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
         resultText.setLength(0);
         contentPanel.removeAll();
 
-        // swingWorker.execute();
+     //    swingWorker.execute();
+
         swingWorker.executeWithBlocking();
     }
 
@@ -788,6 +791,47 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
     }
 
 
+    private Mask combineMasks(Mask mask1, Mask mask2) {
+
+        ArrayList<String> expressionParts = new ArrayList<String>();
+
+        int height = 0;
+        int width = 0;
+        Mask.ImageType imageType = null;
+        if (mask1 != null && mask1.getName() != null && mask1.getName().length() > 0) {
+            expressionParts.add(mask1.getName());
+
+            imageType = mask1.getImageType();
+             height = mask1.getRasterHeight();
+             width = mask1.getRasterWidth();
+        }
+
+
+        if (mask2 != null && mask2.getName() != null && mask2.getName().length() > 0) {
+            expressionParts.add(mask2.getName());
+             imageType = mask2.getImageType();
+             height = mask2.getRasterHeight();
+             width = mask2.getRasterWidth();
+        }
+
+        String expression = "";
+        if (expressionParts.size() > 0) {
+            expression = StringUtils.join(expressionParts, " && ");
+        }
+
+
+
+
+
+     //   Mask maskCombined = new Mask("CombinedMask", width, height, new Mask.ImageType("Maths"));
+        if (expression != null && expression.length() > 0) {
+           return new Mask("CombinedMask", width, height, imageType);
+        } else {
+            return null;
+        }
+    }
+
+
     private String getValidPixelExpressionWithQualityMask(String validPixExp, Mask qualityMask) {
 
         ArrayList<String> expressionParts = new ArrayList<String>();
@@ -814,9 +858,17 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
         final ProgressMonitor subPm = SubProgressMonitor.create(pm, 1);
 
         // todo Danny set valid pix exp using the Quality masks
+
+
+// todo Danny try perhaps to combine masks if setting valid pix exp is a problem
+      //  combineMasks(regionMask, qualityMask);
+
         String initialValidPixExp = raster.getValidPixelExpression();
+        boolean isRunning = computePanel.isRunning();
         String newValidPixExp = getValidPixelExpressionWithQualityMask(initialValidPixExp, qualityMask);
-        raster.setValidPixelExpression(newValidPixExp);
+
+        // todo this triggers Errors due to node listening
+   //     raster.setValidPixelExpression(newValidPixExp);
 
         if (regionMask != null) {
             stx = new StxFactory()
@@ -843,6 +895,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
         histograms[stxIdx] = stx.getHistogram();
 
+        // todo this triggers Errors due to node listening
         if (statisticsCriteriaPanel.includeTotalPixels()) {
             addRawTotalToStx(raster, pm, regionMask, stx);
         }
@@ -855,7 +908,8 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
         contentPanel.add(statPanel);
         updateLeftPanel();
 
-        raster.setValidPixelExpression(initialValidPixExp);
+        // todo this triggers Errors due to node listening
+  //      raster.setValidPixelExpression(initialValidPixExp);
     }
 
 

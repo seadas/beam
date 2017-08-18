@@ -288,26 +288,28 @@ class MultipleRoiComputePanelQmasks extends JPanel {
 
 
     void setRaster(final RasterDataNode newRaster) {
-        if (this.raster != newRaster) {
-            this.raster = newRaster;
-            if (newRaster == null) {
-                if (product != null) {
-                    product.removeProductNodeListener(productNodeListener);
+        if (!isRunning()) {
+            if (this.raster != newRaster) {
+                this.raster = newRaster;
+                if (newRaster == null) {
+                    if (product != null) {
+                        product.removeProductNodeListener(productNodeListener);
+                    }
+                    product = null;
+                } else if (product != newRaster.getProduct()) {
+                    if (product != null) {
+                        product.removeProductNodeListener(productNodeListener);
+                    }
+                    product = newRaster.getProduct();
+                    if (product != null) {
+                        product.addProductNodeListener(productNodeListener);
+                    }
                 }
-                product = null;
-            } else if (product != newRaster.getProduct()) {
-                if (product != null) {
-                    product.removeProductNodeListener(productNodeListener);
-                }
-                product = newRaster.getProduct();
-                if (product != null) {
-                    product.addProductNodeListener(productNodeListener);
-                }
+                updateRegionMaskListState();
+                updateQualityMaskListState();
+                updateBandNameListState();
+                refreshButton.setEnabled(raster != null);
             }
-            updateRegionMaskListState();
-            updateQualityMaskListState();
-            updateBandNameListState();
-            refreshButton.setEnabled(raster != null);
         }
     }
 
@@ -319,7 +321,9 @@ class MultipleRoiComputePanelQmasks extends JPanel {
 
 
     void updateEnablement() {
-        boolean hasMasks = (product != null && product.getMaskGroup().getNodeCount() > 0);
+        if (!isRunning()) {
+
+            boolean hasMasks = (product != null && product.getMaskGroup().getNodeCount() > 0);
         boolean canSelectMasks = hasMasks && useRoiCheckBox.isSelected();
         useRoiCheckBox.setEnabled(hasMasks);
         regionMaskNameSearchField.setEnabled(canSelectMasks);
@@ -333,7 +337,6 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         qualityMaskSelectNoneCheckBox.setEnabled(canSelectMasks && qualityMaskNameList.getCheckBoxListSelectedIndices().length > 0);
 
 
-        if (!isRunning()) {
             refreshButton.setEnabled(raster != null);
         }
     }
@@ -361,18 +364,20 @@ class MultipleRoiComputePanelQmasks extends JPanel {
 
         @Override
         public void nodeDataChanged(ProductNodeEvent event) {
-            if (!useRoiCheckBox.isSelected()) {
-                return;
-            }
-            final ProductNode sourceNode = event.getSourceNode();
-            if (!(sourceNode instanceof Mask)) {
-                return;
-            }
-            final String maskName = ((Mask) sourceNode).getName();
-            final String[] selectedNames = getSelectedRegionMaskNames();
+            if (!isRunning()) {
+                if (!useRoiCheckBox.isSelected()) {
+                    return;
+                }
+                final ProductNode sourceNode = event.getSourceNode();
+                if (!(sourceNode instanceof Mask)) {
+                    return;
+                }
+                final String maskName = ((Mask) sourceNode).getName();
+                final String[] selectedNames = getSelectedRegionMaskNames();
 
-            if (StringUtils.contains(selectedNames, maskName)) {
-                updateEnablement();
+                if (StringUtils.contains(selectedNames, maskName)) {
+                    updateEnablement();
+                }
             }
         }
 
@@ -382,20 +387,20 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         }
 
         private void handleEvent(ProductNodeEvent event) {
-            ProductNode sourceNode = event.getSourceNode();
-            if (sourceNode instanceof Mask) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateRegionMaskListState();
-                    }
-                });
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateQualityMaskListState();
-                    }
-                });
+            if (!isRunning()) {
+
+                ProductNode sourceNode = event.getSourceNode();
+
+                if (sourceNode instanceof Mask) {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateRegionMaskListState();
+                            updateQualityMaskListState();
+                        }
+                    });
+
+                }
             }
         }
     }
