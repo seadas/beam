@@ -55,6 +55,7 @@ public class StatisticsToolView extends AbstractStatisticsToolView {
 
 
     public static final String PARAM_LABEL_MEDIAN_ENABLED = "Include Median";
+    public static final String PARAM_TOOLTIP_MEDIAN_ENABLED = "Calculation of median will increase computation time";
     public static final String PARAM_KEY_MEDIAN_ENABLED = "statistics.median.enabled";
     public static final boolean PARAM_DEFVAL_MEDIAN_ENABLED = true;
 
@@ -86,6 +87,7 @@ public class StatisticsToolView extends AbstractStatisticsToolView {
     public static final String PARAM_LABEL_TIME_SERIES_METADATA_ENABLED = "Include Time Series MetaData";
     public static final String PARAM_KEY_TIME_SERIES_METADATA_ENABLED = "statistics.timeSeriesMetaData.enabled";
     public static final boolean PARAM_DEFVAL_TIME_SERIES_METADATA_ENABLED = false;
+    public static final String PARAM_TOOLTIPS_TIME_SERIES_METADATA_ENABLED = "See preferences for time series option";
 
     public static final String PARAM_LABEL_TIME_METADATA_ENABLED = "Include Time MetaData";
     public static final String PARAM_KEY_TIME_METADATA_ENABLED = "statistics.timeMetaData.enabled";
@@ -198,6 +200,6 @@ public class StatisticsToolView extends AbstractStatisticsToolView {
 
     @Override
     protected PagePanel createPagePanel() {
-        return new StatisticsPanel(this, getDescriptor().getHelpId());
+        return new StatisticsPanelQmasks(this, getDescriptor().getHelpId());
     }
 }

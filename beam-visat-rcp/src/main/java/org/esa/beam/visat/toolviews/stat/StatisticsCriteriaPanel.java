@@ -270,7 +270,6 @@ public class StatisticsCriteriaPanel {
         includeHistogramStatsCheckBox.setVisible(getPreferencesHistogramStatsEnabled());
         includeTimeSeriesMetaDataCheckBox.setVisible(getPreferencesTimeSeriesMetaDataEnabled());
         includeProjectionParametersCheckBox.setVisible(getPreferencesProjectionParametersEnabled());
-        includeTimeMetaDataCheckBox.setToolTipText("See preferences for time series option");
 
 
 
@@ -347,14 +346,25 @@ public class StatisticsCriteriaPanel {
 
         // "Fields" Tab Variables and Components
         includeTotalPixelsCheckBox = new JCheckBox(StatisticsToolView.PARAM_LABEL_TOTAL_PIXEL_COUNT_ENABLED);
+
         includeMedianCheckBox = new JCheckBox(StatisticsToolView.PARAM_LABEL_MEDIAN_ENABLED);
+        includeMedianCheckBox.setToolTipText(StatisticsToolView.PARAM_TOOLTIP_MEDIAN_ENABLED);
+
         includeHistogramStatsCheckBox = new JCheckBox(StatisticsToolView.PARAM_LABEL_HISTOGRAM_STATS_ENABLED);
+
         includeFileMetaDataCheckBox = new JCheckBox(StatisticsToolView.PARAM_LABEL_FILE_METADATA_ENABLED);
+
         includeMaskMetaDataCheckBox = new JCheckBox(StatisticsToolView.PARAM_LABEL_MASK_METADATA_ENABLED);
+
         includeBandMetaDataCheckBox = new JCheckBox(StatisticsToolView.PARAM_LABEL_BAND_METADATA_ENABLED);
+
         includeBinningInfoCheckBox = new JCheckBox(StatisticsToolView.PARAM_LABEL_BINNING_INFO_ENABLED);
+
         includeTimeMetaDataCheckBox = new JCheckBox(StatisticsToolView.PARAM_LABEL_TIME_METADATA_ENABLED);
+
         includeTimeSeriesMetaDataCheckBox = new JCheckBox(StatisticsToolView.PARAM_LABEL_TIME_SERIES_METADATA_ENABLED);
+        includeTimeSeriesMetaDataCheckBox.setToolTipText(StatisticsToolView.PARAM_TOOLTIPS_TIME_SERIES_METADATA_ENABLED);
+
         includeProjectionParametersCheckBox = new JCheckBox(StatisticsToolView.PARAM_LABEL_PROJECTION_PARAMETERS_METADATA_ENABLED);
 
         percentThresholdsLabel = new JLabel(StatisticsToolView.PARAM_LABEL_PERCENT_THRESHOLDS);
