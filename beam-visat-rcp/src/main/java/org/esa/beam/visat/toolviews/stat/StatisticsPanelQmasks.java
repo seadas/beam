@@ -510,10 +510,10 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
     }
 
     @Override
-    public void compute(final Mask[] selectedMasks, final Mask[] selectedQualityMasks, final Band[] selectedBands) {
+    public void compute(final Mask[] selectedRegionMasks, final Mask[] selectedQualityMasks, final Band[] selectedBands) {
 
-    //    computePanel.setRunning(true);
-    //    System.out.print("Run2\n");
+        //    computePanel.setRunning(true);
+        //    System.out.print("Run2\n");
         spreadsheetPanel.removeAll();
         fixedHistDomainAllPlotsInitialized = false;
 
@@ -553,8 +553,8 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
             numBands = selectedBands.length;
         }
 
-        if (selectedMasks != null) {
-            for (Mask tmpMask : selectedMasks) {
+        if (selectedRegionMasks != null) {
+            for (Mask tmpMask : selectedRegionMasks) {
                 if (tmpMask != null) {
                     numRegionMasks++;
                 }
@@ -617,9 +617,32 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
                     numberOfProgressSteps = numberOfProgressSteps * 2;  // adds additional stx calculation per each stxRegion
                 }
                 pm.beginTask(title, numberOfProgressSteps);
+
+                boolean combineQualityMasks = false;  // right now this feature won't work at least for the regional masks where you actually have to add and remove
+                // the mask.  It is intended for creation intersection, union, or complement of all selected quality masks
+                // the breakage occurs during cleanup when trying to delete the temporary masks.
+                Mask comboQualityMask = null;
+                Mask[] comboQualityMasks = null;
+
+
                 try {
                     if (statisticsCriteriaPanel.includeTotalPixels()) {
                         addNoNanBand(getProduct());
+                    }
+
+
+                    if (combineQualityMasks && selectedQualityMasks != null) {
+                        comboQualityMask = combineMasks(selectedQualityMasks, 1, getProduct());
+
+                        if (comboQualityMask != null) {
+                            // todo if we add this then removal causes breakage
+                    //        getProduct().getMaskGroup().add(comboQualityMask);
+                        }
+
+                        if (comboQualityMask != null) {
+                            comboQualityMasks = new Mask[1];
+                            comboQualityMasks[0] = comboQualityMask;
+                        }
                     }
 
                     int stxIdx = 0;
@@ -628,12 +651,24 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
                     if (computePanel.isUseViewBandRaster()) {
                         RasterDataNode raster = getRaster();
-                        totalRecordCount += computeAllStxForRaster(raster, pm, selectedMasks, selectedQualityMasks, stxIdx);
+                        if (combineQualityMasks) {
+                            recordCount = computeAllStxForRaster(raster, pm, selectedRegionMasks, comboQualityMasks, stxIdx);
+                        } else {
+                            recordCount = computeAllStxForRaster(raster, pm, selectedRegionMasks, selectedQualityMasks, stxIdx);
+
+                        }
+                        stxIdx += recordCount;
+                        totalRecordCount += recordCount;
                     } else {
                         for (int rasterIdx = 0; rasterIdx < selectedBands.length; rasterIdx++) {
                             final Band band = selectedBands[rasterIdx];
                             RasterDataNode raster = getProduct().getRasterDataNode(band.getName());
-                             recordCount = computeAllStxForRaster(raster, pm, selectedMasks, selectedQualityMasks, stxIdx);
+                            if (combineQualityMasks) {
+                                recordCount = computeAllStxForRaster(raster, pm, selectedRegionMasks, comboQualityMasks, stxIdx);
+                            } else {
+                                recordCount = computeAllStxForRaster(raster, pm, selectedRegionMasks, selectedQualityMasks, stxIdx);
+
+                            }
                             stxIdx += recordCount;
                             totalRecordCount += recordCount;
                         }
@@ -644,6 +679,33 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
                     if (statisticsCriteriaPanel.includeTotalPixels()) {
                         removeNoNanBand(getProduct());
                     }
+
+
+                    //  this deletion of the mask causes code to freeze so currently is not enabled
+                    if (comboQualityMasks != null && comboQualityMasks[0] != null) {
+                        final ProductNodeGroup<Mask> maskGroup = getProduct().getMaskGroup();
+
+                        String[] maskGroupNodeNames = new String[maskGroup.getNodeNames().length];
+                        int i=0;
+                        for (String name : maskGroup.getNodeNames()) {
+                            maskGroupNodeNames[i] = name;
+                            i++;
+                        }
+
+                        for (String name : maskGroupNodeNames) {
+                            if (name.equals(comboQualityMasks[0].getName())) {
+                                maskGroup.remove(maskGroup.get(name));
+                            }
+                        }
+
+//                        for (String name : maskGroup.getNodeNames()) {
+//                            if (name.equals(comboQualityMasks[0].getName())) {
+//                                maskGroup.remove(maskGroup.get(name));
+//                            }
+//                        }
+                    }
+
+
                     updateLeftPanel();
 
                     resultText.setLength(0);
@@ -724,9 +786,9 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
         resultText.setLength(0);
         contentPanel.removeAll();
 
-            swingWorker.execute();
+        swingWorker.execute();
 
-       // swingWorker.executeWithBlocking();
+        // swingWorker.executeWithBlocking();
     }
 
 
@@ -734,7 +796,6 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
         int recordCount = 0;
 
-        boolean combineMasks = true;
         if (raster != null) {
             if (computePanel.isIncludeFullScene()) {
                 if (computePanel.isIncludeNoQuality()) {
@@ -742,24 +803,11 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
                     recordCount++;
                 }
                 if (qualityMasks != null) {
-
-                    if (combineMasks) {
-                        Mask combinedQualityMasks = combineMasks(qualityMasks, 1, getProduct());
-
-                       String validComExp = combinedQualityMasks.getImageConfig().getValue("expression");
-                       String validQuaExp = qualityMasks[0].getImageConfig().getValue("expression");
-                        computeStx(raster, pm, null, combinedQualityMasks, stxIdx + recordCount);
-
-                        recordCount++;
-                    } else {
-                        for (Mask qualityMask : qualityMasks) {
-                            if (qualityMask != null) {
-
-
-                               computeStx(raster, pm, null, qualityMask, stxIdx + recordCount);
-                                recordCount++;
-                            }
+                    for (Mask qualityMask : qualityMasks) {
+                        if (qualityMask != null) {
+                            computeStx(raster, pm, null, qualityMask, stxIdx + recordCount);
                         }
+                        recordCount++;
                     }
                 }
             }
@@ -776,14 +824,17 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
                             for (Mask qualityMask : qualityMasks) {
                                 if (qualityMask != null) {
                                     computeStx(raster, pm, regionMask, qualityMask, stxIdx + recordCount);
-                                    recordCount++;
                                 }
+                                recordCount++;
                             }
                         }
                     }
                 }
             }
+
+
         }
+
 
         return recordCount;
     }
@@ -812,7 +863,6 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
         return pixelCount;
     }
-
 
 
     private Mask combineMasks(Mask[] masks, int combinationType, Product product) {
@@ -847,15 +897,15 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
         //   Mask maskCombined = new Mask("CombinedMask", width, height, new Mask.ImageType("Maths"));
         if (expression != null && expression.length() > 0) {
-       //     Mask combinedMask = new Mask("CombinedMask", width, height, imageType);
+            //     Mask combinedMask = new Mask("CombinedMask", width, height, imageType);
 
-           Mask combinedMask = Mask.BandMathsType.create("COMBINED_MASK", "", product.getSceneRasterWidth(), product.getSceneRasterHeight(),
+            Mask combinedMask = Mask.BandMathsType.create("COMBINED_MASK", "", product.getSceneRasterWidth(), product.getSceneRasterHeight(),
                     expression, Color.RED, 0.5);
 
 
-       //     combinedMask.updateExpression(combinedMask.getValidMaskExpression(), expression);
-          //  combinedMask.setSourceImage(VirtualBand.createVirtualSourceImage(combinedMask, expression));
-           // combinedMask.setValidPixelExpression(expression);
+            //     combinedMask.updateExpression(combinedMask.getValidMaskExpression(), expression);
+            //  combinedMask.setSourceImage(VirtualBand.createVirtualSourceImage(combinedMask, expression));
+            // combinedMask.setValidPixelExpression(expression);
             return combinedMask;
         } else {
             return null;
@@ -909,8 +959,8 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
         }
 
 
-        if (qualityMask != null && qualityMask.getName() != null && qualityMask.getName().length() > 0) {
-       //     expressionParts.add(qualityMask.getName());
+        if (qualityMask != null && qualityMask.getImageConfig() != null && qualityMask.getImageConfig().getValue("expression") != null) {
+            //     expressionParts.add(qualityMask.getName());
             expressionParts.add(qualityMask.getImageConfig().getValue("expression").toString());
         }
 
@@ -926,18 +976,12 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
         final Stx stx;
         final ProgressMonitor subPm = SubProgressMonitor.create(pm, 1);
 
-        // todo Danny set valid pix exp using the Quality masks
-
-
-         // todo Danny try perhaps to combine masks if setting valid pix exp is a problem
-        //  combineMasks(regionMask, qualityMask);
-
         String initialValidPixExp = raster.getValidPixelExpression();
-        boolean isRunning = computePanel.isRunning();
         String newValidPixExp = getValidPixelExpressionWithQualityMask(initialValidPixExp, qualityMask);
 
+
         // todo this triggers Errors due to node listening
-            raster.setValidPixelExpression(newValidPixExp);
+        raster.setValidPixelExpression(newValidPixExp);
 
         if (regionMask != null) {
             stx = new StxFactory()
@@ -977,7 +1021,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
         updateLeftPanel();
 
         // todo this triggers Errors due to node listening
-           raster.setValidPixelExpression(initialValidPixExp);
+        raster.setValidPixelExpression(initialValidPixExp);
     }
 
 
@@ -1004,13 +1048,13 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
             Product prod = raster.getProduct();
 
             if (prod != null) {
-           //     addNoNanBand(prod);
+                //     addNoNanBand(prod);
 
                 if (noNanBandRaster != null) {
                     int fullPixelCount = getFullPixelCount(noNanBandRaster, pm, mask);
                     stx.setRawTotal(fullPixelCount);
 
-             //     removeNoNanBand(prod);
+                    //     removeNoNanBand(prod);
                 }
             }
         }
@@ -1039,18 +1083,18 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
     // todo Danny creates a band with no no-data in order to get full pixel count
     private void addNoNanBand(Product prod) {
 
-            if (prod != null) {
-                final int width = prod.getSceneRasterWidth();
-                final int height = prod.getSceneRasterHeight();
+        if (prod != null) {
+            final int width = prod.getSceneRasterWidth();
+            final int height = prod.getSceneRasterHeight();
 
-                Band band = new Band(NO_NAN_BANDNAME, ProductData.TYPE_FLOAT32, width, height);
+            Band band = new Band(NO_NAN_BANDNAME, ProductData.TYPE_FLOAT32, width, height);
 
-                if (band != null) {
-                    prod.addBand(band);
-                    band.setSourceImage(VirtualBand.createVirtualSourceImage(band, "1"));
-                    noNanBandRaster = prod.getRasterDataNode(band.getName());
-                }
+            if (band != null) {
+                prod.addBand(band);
+                band.setSourceImage(VirtualBand.createVirtualSourceImage(band, "1"));
+                noNanBandRaster = prod.getRasterDataNode(band.getName());
             }
+        }
     }
 
 
@@ -1071,13 +1115,13 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
     // todo Danny delete band with no no-data
     private void removeNoNanBand(Product prod) {
-            if (prod != null && noNanBandRaster != null) {
-                Band band = prod.getBand(noNanBandRaster.getName());
+        if (prod != null && noNanBandRaster != null) {
+            Band band = prod.getBand(noNanBandRaster.getName());
 
-                if (band != null) {
-                    prod.removeBand(band);
-                }
+            if (band != null) {
+                prod.removeBand(band);
             }
+        }
     }
 
 

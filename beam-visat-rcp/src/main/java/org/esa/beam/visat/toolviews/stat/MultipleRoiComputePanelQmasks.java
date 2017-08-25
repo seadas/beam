@@ -44,11 +44,10 @@ import java.awt.event.ItemListener;
  * @author Marco Zuehlke
  * @author Daniel Knowles
  * @since SeaDAS 7.5
- *
+ * <p>
  * Revised by Daniel Knowles for SeaDAS 7.5
  * 1. better handles layout, prevents components from being hidden due to window resizing.
  * 2. validFields added to help govern enablement of the refreshButton.
- *
  */
 class MultipleRoiComputePanelQmasks extends JPanel {
 
@@ -159,7 +158,7 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         tabbedPane.addTab("Quality", getQualityMaskPanel());
         tabbedPane.setToolTipTextAt(2, "Select quality masks");
 
-        return  tabbedPane;
+        return tabbedPane;
 
     }
 
@@ -179,7 +178,6 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         });
         includeNoQualityCheckBox.setMinimumSize(includeNoQualityCheckBox.getPreferredSize());
         includeNoQualityCheckBox.setPreferredSize(includeNoQualityCheckBox.getPreferredSize());
-
 
 
         JPanel maskFilterPane = getQualityFilterPanel();
@@ -257,7 +255,6 @@ class MultipleRoiComputePanelQmasks extends JPanel {
     }
 
 
-
     private JPanel getBandsPanel() {
 
 
@@ -314,34 +311,26 @@ class MultipleRoiComputePanelQmasks extends JPanel {
     }
 
 
-
-
-
-
-
-
     void updateEnablement() {
         if (!isRunning()) {
 
             boolean hasMasks = (product != null && product.getMaskGroup().getNodeCount() > 0);
-        boolean canSelectMasks = hasMasks && useRoiCheckBox.isSelected();
-        useRoiCheckBox.setEnabled(hasMasks);
-        regionMaskNameSearchField.setEnabled(canSelectMasks);
-        regionMaskNameList.setEnabled(canSelectMasks);
-        regionMaskSelectAllCheckBox.setEnabled(canSelectMasks && regionMaskNameList.getCheckBoxListSelectedIndices().length < regionMaskNameList.getModel().getSize());
-        regionMaskSelectNoneCheckBox.setEnabled(canSelectMasks && regionMaskNameList.getCheckBoxListSelectedIndices().length > 0);
+            boolean canSelectMasks = hasMasks && useRoiCheckBox.isSelected();
+            useRoiCheckBox.setEnabled(hasMasks);
+            regionMaskNameSearchField.setEnabled(canSelectMasks);
+            regionMaskNameList.setEnabled(canSelectMasks);
+            regionMaskSelectAllCheckBox.setEnabled(canSelectMasks && regionMaskNameList.getCheckBoxListSelectedIndices().length < regionMaskNameList.getModel().getSize());
+            regionMaskSelectNoneCheckBox.setEnabled(canSelectMasks && regionMaskNameList.getCheckBoxListSelectedIndices().length > 0);
 
-        qualityMaskNameSearchField.setEnabled(canSelectMasks);
-        qualityMaskNameList.setEnabled(canSelectMasks);
-        qualityMaskSelectAllCheckBox.setEnabled(canSelectMasks && qualityMaskNameList.getCheckBoxListSelectedIndices().length < qualityMaskNameList.getModel().getSize());
-        qualityMaskSelectNoneCheckBox.setEnabled(canSelectMasks && qualityMaskNameList.getCheckBoxListSelectedIndices().length > 0);
+            qualityMaskNameSearchField.setEnabled(canSelectMasks);
+            qualityMaskNameList.setEnabled(canSelectMasks);
+            qualityMaskSelectAllCheckBox.setEnabled(canSelectMasks && qualityMaskNameList.getCheckBoxListSelectedIndices().length < qualityMaskNameList.getModel().getSize());
+            qualityMaskSelectNoneCheckBox.setEnabled(canSelectMasks && qualityMaskNameList.getCheckBoxListSelectedIndices().length > 0);
 
 
             refreshButton.setEnabled(raster != null);
         }
     }
-
-
 
 
     void updateRunButton(boolean enabled) {
@@ -433,7 +422,6 @@ class MultipleRoiComputePanelQmasks extends JPanel {
     }
 
 
-
     public void run() {
         setRunning(true);
         boolean useRoi = useRoiCheckBox.isSelected();
@@ -489,12 +477,8 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         }
 
 
-
-
         method.compute(selectedMasks, selectedQualityMasks, selectedBands);
     }
-
-
 
 
     private void selectAndEnableRegionCheckBoxes() {
@@ -522,7 +506,22 @@ class MultipleRoiComputePanelQmasks extends JPanel {
             final ProductNodeGroup<Mask> maskGroup = product.getMaskGroup();
             final Mask[] masks = maskGroup.toArray(new Mask[maskGroup.getNodeCount()]);
             for (Mask mask : masks) {
-                maskNameListModel.addElement(mask.getName());
+                if (mask != null && mask.getName() != null) {
+
+                    String imageTypeName = null;
+                    if (mask.getImageType() != null && mask.getImageType().getName() != null) {
+                        imageTypeName = mask.getImageType().getName();
+                    }
+
+                    if ("Geometry".equals(imageTypeName) ||
+                            mask.getName().toLowerCase().contains("bathymetry") ||
+                            mask.getName().toLowerCase().contains("topography") ||
+                            mask.getName().toLowerCase().contains("elev") ||
+                            mask.getName().toLowerCase().contains("land") ||
+                            mask.getName().toLowerCase().contains("water")) {
+                        maskNameListModel.addElement(mask.getName());
+                    }
+                }
             }
         }
 
@@ -661,8 +660,6 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         regionMaskSelectNoneCheckBox.setPreferredSize(regionMaskSelectNoneCheckBox.getPreferredSize());
 
 
-
-
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
 
@@ -678,7 +675,6 @@ class MultipleRoiComputePanelQmasks extends JPanel {
     public boolean isIncludeFullScene() {
         return includeFullScene;
     }
-
 
 
     private void selectAndEnableQualityCheckBoxes() {
@@ -706,7 +702,17 @@ class MultipleRoiComputePanelQmasks extends JPanel {
             final ProductNodeGroup<Mask> maskGroup = product.getMaskGroup();
             final Mask[] masks = maskGroup.toArray(new Mask[maskGroup.getNodeCount()]);
             for (Mask mask : masks) {
-                maskNameListModel.addElement(mask.getName());
+                if (mask != null && mask.getName() != null) {
+
+                    String imageTypeName = null;
+                    if (mask.getImageType() != null && mask.getImageType().getName() != null) {
+                        imageTypeName = mask.getImageType().getName();
+                    }
+
+                    if (!"Geometry".equals(imageTypeName)) {
+                        maskNameListModel.addElement(mask.getName());
+                    }
+                }
             }
         }
 
@@ -839,8 +845,6 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         qualityMaskSelectNoneCheckBox.setPreferredSize(qualityMaskSelectNoneCheckBox.getPreferredSize());
 
 
-
-
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
 
@@ -856,11 +860,6 @@ class MultipleRoiComputePanelQmasks extends JPanel {
     public boolean isIncludeNoQuality() {
         return includeNoQuality;
     }
-
-
-
-
-
 
 
     //---------------------- Bandnames List ----------------------------------------------
@@ -1003,7 +1002,6 @@ class MultipleRoiComputePanelQmasks extends JPanel {
     }
 
 
-
     private JPanel getBandNameListPanel() {
         bandNameList = new CheckBoxList(bandNameSearchField.getDisplayListModel()) {
             @Override
@@ -1077,8 +1075,6 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         bandNameselectNoneCheckBox.setPreferredSize(bandNameselectNoneCheckBox.getPreferredSize());
 
 
-
-
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
 
@@ -1129,7 +1125,6 @@ class MultipleRoiComputePanelQmasks extends JPanel {
     public void setUseViewBandRaster(boolean useViewBandRaster) {
         this.useViewBandRaster = useViewBandRaster;
     }
-
 
 
     public boolean isRunning() {
