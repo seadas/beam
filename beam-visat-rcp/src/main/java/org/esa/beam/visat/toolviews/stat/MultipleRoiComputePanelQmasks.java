@@ -514,6 +514,7 @@ class MultipleRoiComputePanelQmasks extends JPanel {
                     }
 
                     if ("Geometry".equals(imageTypeName) ||
+                            mask.getName().toLowerCase().contains("region") ||
                             mask.getName().toLowerCase().contains("bathymetry") ||
                             mask.getName().toLowerCase().contains("topography") ||
                             mask.getName().toLowerCase().contains("elev") ||
