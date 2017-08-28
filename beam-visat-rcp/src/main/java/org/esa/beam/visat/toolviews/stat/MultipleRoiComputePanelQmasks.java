@@ -57,6 +57,26 @@ class MultipleRoiComputePanelQmasks extends JPanel {
     private QuickListFilterField bandNameSearchField;
 
 
+
+    public enum MaskGrouping {
+        SEPARATE("SEPARATE"),
+        INTERSECTION("INTERSECTION"),
+        UNION("UNION"),
+        COMPLEMENT("COMPLEMENT");
+
+
+        private MaskGrouping(String name) {
+            this.name = name;
+        }
+
+        private final String name;
+
+        public String toString() {
+            return name;
+        }
+    }
+
+
     private ComputeMasks method;
 
     interface ComputeMasks {
@@ -89,6 +109,7 @@ class MultipleRoiComputePanelQmasks extends JPanel {
 
     private boolean includeFullScene = true;
     private boolean includeNoQuality = true;
+    private MaskGrouping qualityMaskGrouping = MaskGrouping.SEPARATE;
 
     private boolean isRunning = false;
 
@@ -860,6 +881,10 @@ class MultipleRoiComputePanelQmasks extends JPanel {
 
     public boolean isIncludeNoQuality() {
         return includeNoQuality;
+    }
+
+    public MaskGrouping getQualityMaskGrouping() {
+        return qualityMaskGrouping;
     }
 
 

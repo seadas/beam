@@ -623,6 +623,9 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
                 boolean combineQualityMasks = true;  // right now this feature won't work at least for the regional masks where you actually have to add and remove
                 // the mask.  It is intended for creation intersection, union, or complement of all selected quality masks
                 // the breakage occurs during cleanup when trying to delete the temporary masks.
+//                if (MultipleRoiComputePanelQmasks.MaskGrouping.INTERSECTION == computePanel.getQualityMaskGrouping() ) {
+//                    combineQualityMasks = true;
+//                }
                 Mask comboQualityMask = null;
                 Mask tmpComboQualityMask = null;
                 Mask[] comboQualityMasks = null;
@@ -635,7 +638,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
 
                     if (combineQualityMasks && selectedQualityMasks != null) {
-                        String combinedMaskExpression = combineMaskExpressions(selectedQualityMasks, 1);
+                        String combinedMaskExpression = combineMaskExpressions(selectedQualityMasks, computePanel.getQualityMaskGrouping());
 
                         if (combinedMaskExpression != null && combinedMaskExpression.length() > 0) {
                             boolean qualityMaskExists = false;
@@ -673,6 +676,8 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
                                 comboQualityMasks = new Mask[1];
                                 comboQualityMasks[0] = comboQualityMask;
                             }
+                        } else {
+                            combineQualityMasks = false;
                         }
                     }
 
@@ -898,7 +903,11 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
     }
 
 
-    private String combineMaskExpressions(Mask[] masks, int combinationType) {
+    private String combineMaskExpressions(Mask[] masks, MultipleRoiComputePanelQmasks.MaskGrouping maskGrouping) {
+
+        if (masks == null || masks.length == 0) {
+            return null;
+        }
 
         ArrayList<String> expressionParts = new ArrayList<String>();
 
@@ -908,12 +917,27 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
             }
         }
 
-        String expression = "";
-        if (expressionParts.size() > 0) {
-            expression = StringUtils.join(expressionParts, " && ");
+        String[] expressionPartsArray = new String[expressionParts.size()];
+        expressionPartsArray = expressionParts.toArray(expressionPartsArray);
+
+
+        if (expressionPartsArray.length > 0) {
+            switch (maskGrouping) {
+                case INTERSECTION:
+                    return StringUtils.join(expressionPartsArray, " && ");
+                case UNION:
+                    return StringUtils.join(expressionPartsArray, " || ");
+                case COMPLEMENT:
+                    for (int i=0; i< expressionPartsArray.length; i++) {
+                        expressionPartsArray[i] = "!" + expressionPartsArray[i];
+                    }
+                    return StringUtils.join(expressionPartsArray, " && ");
+                default:
+                    return null;
+            }
         }
 
-        return expression;
+        return null;
     }
 
 
