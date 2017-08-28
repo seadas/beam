@@ -119,6 +119,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
     private String NO_NAN_BANDNAME = "tmp_no_nan_2dw7gi4kg97kgkd9034kf";
     RasterDataNode noNanBandRaster = null;
+    private String COMBINATION_QUALITY_MASKNAME = "Combination_Mask_14rmvm4t30id";
 
 
     private int plotMinHeight = 300;
@@ -577,6 +578,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
 
         numStxRegions = numBands * numRegionMasks * numQualityMasks;
+        System.out.println("numStxRegions=" + numStxRegions);
 
         this.histograms = new Histogram[numStxRegions];
         final String title = "Computing Statistics";
@@ -618,10 +620,11 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
                 }
                 pm.beginTask(title, numberOfProgressSteps);
 
-                boolean combineQualityMasks = false;  // right now this feature won't work at least for the regional masks where you actually have to add and remove
+                boolean combineQualityMasks = true;  // right now this feature won't work at least for the regional masks where you actually have to add and remove
                 // the mask.  It is intended for creation intersection, union, or complement of all selected quality masks
                 // the breakage occurs during cleanup when trying to delete the temporary masks.
                 Mask comboQualityMask = null;
+                Mask tmpComboQualityMask = null;
                 Mask[] comboQualityMasks = null;
 
 
@@ -632,16 +635,44 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
 
                     if (combineQualityMasks && selectedQualityMasks != null) {
-                        comboQualityMask = combineMasks(selectedQualityMasks, 1, getProduct());
+                        String combinedMaskExpression = combineMaskExpressions(selectedQualityMasks, 1);
 
-                        if (comboQualityMask != null) {
-                            // todo if we add this then removal causes breakage
-                    //        getProduct().getMaskGroup().add(comboQualityMask);
-                        }
+                        if (combinedMaskExpression != null && combinedMaskExpression.length() > 0) {
+                            boolean qualityMaskExists = false;
 
-                        if (comboQualityMask != null) {
-                            comboQualityMasks = new Mask[1];
-                            comboQualityMasks[0] = comboQualityMask;
+                            //  comboQualityMask = combineMasks(selectedQualityMasks, COMBINATION_QUALITY_MASKNAME, 1, getProduct());
+
+
+                            // determine if mask already exists and overwrite it
+                            final ProductNodeGroup<Mask> maskGroup = getProduct().getMaskGroup();
+
+                            String[] maskGroupNodeNames = new String[maskGroup.getNodeNames().length];
+                            int i = 0;
+                            for (String name : maskGroup.getNodeNames()) {
+                                maskGroupNodeNames[i] = name;
+                                i++;
+                            }
+
+                            for (String name : maskGroupNodeNames) {
+                                if (name.equals(COMBINATION_QUALITY_MASKNAME)) {
+                                    qualityMaskExists = true;
+                                    maskGroup.get(name).getImageConfig().setValue("expression", combinedMaskExpression);
+                                    comboQualityMask = maskGroup.get(name);
+                                }
+                            }
+
+
+                            if (!qualityMaskExists && combinedMaskExpression != null) {
+                                // todo if we add this then removal causes breakage
+                                comboQualityMask = Mask.BandMathsType.create(COMBINATION_QUALITY_MASKNAME, "", getProduct().getSceneRasterWidth(), getProduct().getSceneRasterHeight(),
+                                        combinedMaskExpression, Color.RED, 0.5);
+                                getProduct().getMaskGroup().add(comboQualityMask);
+                            }
+
+                            if (comboQualityMask != null) {
+                                comboQualityMasks = new Mask[1];
+                                comboQualityMasks[0] = comboQualityMask;
+                            }
                         }
                     }
 
@@ -682,28 +713,28 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
 
                     //  this deletion of the mask causes code to freeze so currently is not enabled
-                    if (comboQualityMasks != null && comboQualityMasks[0] != null) {
-                        final ProductNodeGroup<Mask> maskGroup = getProduct().getMaskGroup();
-
-                        String[] maskGroupNodeNames = new String[maskGroup.getNodeNames().length];
-                        int i=0;
-                        for (String name : maskGroup.getNodeNames()) {
-                            maskGroupNodeNames[i] = name;
-                            i++;
-                        }
-
-                        for (String name : maskGroupNodeNames) {
-                            if (name.equals(comboQualityMasks[0].getName())) {
-                                maskGroup.remove(maskGroup.get(name));
-                            }
-                        }
-
+//                    if (comboQualityMasks != null && comboQualityMasks[0] != null) {
+//                        final ProductNodeGroup<Mask> maskGroup = getProduct().getMaskGroup();
+//
+//                        String[] maskGroupNodeNames = new String[maskGroup.getNodeNames().length];
+//                        int i=0;
 //                        for (String name : maskGroup.getNodeNames()) {
+//                            maskGroupNodeNames[i] = name;
+//                            i++;
+//                        }
+//
+//                        for (String name : maskGroupNodeNames) {
 //                            if (name.equals(comboQualityMasks[0].getName())) {
 //                                maskGroup.remove(maskGroup.get(name));
 //                            }
 //                        }
-                    }
+//
+////                        for (String name : maskGroup.getNodeNames()) {
+////                            if (name.equals(comboQualityMasks[0].getName())) {
+////                                maskGroup.remove(maskGroup.get(name));
+////                            }
+////                        }
+//                    }
 
 
                     updateLeftPanel();
@@ -712,7 +743,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
                     resultText.append(createText());
 
                     pm.done();
-                    computePanel.setRunning(false);
+
 
                 }
                 return null;
@@ -748,6 +779,8 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
             @Override
             protected void done() {
+                computePanel.setRunning(false);
+
                 try {
                     if (totalRecordCount == 0) {
                         JOptionPane.showMessageDialog(getParentDialogContentPane(),
@@ -865,7 +898,28 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
     }
 
 
-    private Mask combineMasks(Mask[] masks, int combinationType, Product product) {
+    private String combineMaskExpressions(Mask[] masks, int combinationType) {
+
+        ArrayList<String> expressionParts = new ArrayList<String>();
+
+        for (Mask mask : masks) {
+            if (mask != null && mask.getName() != null && mask.getName().length() > 0) {
+                expressionParts.add(mask.getName());
+            }
+        }
+
+        String expression = "";
+        if (expressionParts.size() > 0) {
+            expression = StringUtils.join(expressionParts, " && ");
+        }
+
+        return expression;
+    }
+
+
+
+
+    private Mask combineMasks(Mask[] masks, String maskName, int combinationType, Product product) {
 
         ArrayList<String> expressionParts = new ArrayList<String>();
 
@@ -899,7 +953,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
         if (expression != null && expression.length() > 0) {
             //     Mask combinedMask = new Mask("CombinedMask", width, height, imageType);
 
-            Mask combinedMask = Mask.BandMathsType.create("COMBINED_MASK", "", product.getSceneRasterWidth(), product.getSceneRasterHeight(),
+            Mask combinedMask = Mask.BandMathsType.create(maskName, "", product.getSceneRasterWidth(), product.getSceneRasterHeight(),
                     expression, Color.RED, 0.5);
 
 
