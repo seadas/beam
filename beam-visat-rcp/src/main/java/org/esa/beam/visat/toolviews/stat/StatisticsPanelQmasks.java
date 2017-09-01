@@ -626,9 +626,11 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 //                if (MultipleRoiComputePanelQmasks.MaskGrouping.INTERSECTION == computePanel.getQualityMaskGrouping() ) {
 //                    combineQualityMasks = true;
 //                }
-                Mask comboQualityMask = null;
+                Mask qualityGroupedMask = null;
+                Mask regionalGroupedMask = null;
                 Mask tmpComboQualityMask = null;
-                Mask[] comboQualityMasks = null;
+                Mask[] qualityGroupedMasks = null;
+                Mask[] regionalGroupedMasks = null;
 
 
                 try {
@@ -660,21 +662,21 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
                                 if (name.equals(COMBINATION_QUALITY_MASKNAME)) {
                                     qualityMaskExists = true;
                                     maskGroup.get(name).getImageConfig().setValue("expression", combinedMaskExpression);
-                                    comboQualityMask = maskGroup.get(name);
+                                    qualityGroupedMask = maskGroup.get(name);
                                 }
                             }
 
 
                             if (!qualityMaskExists && combinedMaskExpression != null) {
                                 // todo if we add this then removal causes breakage
-                                comboQualityMask = Mask.BandMathsType.create(COMBINATION_QUALITY_MASKNAME, "", getProduct().getSceneRasterWidth(), getProduct().getSceneRasterHeight(),
+                                qualityGroupedMask = Mask.BandMathsType.create(COMBINATION_QUALITY_MASKNAME, "", getProduct().getSceneRasterWidth(), getProduct().getSceneRasterHeight(),
                                         combinedMaskExpression, Color.RED, 0.5);
-                                getProduct().getMaskGroup().add(comboQualityMask);
+                                getProduct().getMaskGroup().add(qualityGroupedMask);
                             }
 
-                            if (comboQualityMask != null) {
-                                comboQualityMasks = new Mask[1];
-                                comboQualityMasks[0] = comboQualityMask;
+                            if (qualityGroupedMask != null) {
+                                qualityGroupedMasks = new Mask[1];
+                                qualityGroupedMasks[0] = qualityGroupedMask;
                             }
                         } else {
                             combineQualityMasks = false;
@@ -685,26 +687,21 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
                     totalRecordCount = 0;
                     int recordCount = 0;
 
+
                     if (computePanel.isUseViewBandRaster()) {
                         RasterDataNode raster = getRaster();
-                        if (combineQualityMasks) {
-                            recordCount = computeAllStxForRaster(raster, pm, selectedRegionMasks, comboQualityMasks, stxIdx);
-                        } else {
-                            recordCount = computeAllStxForRaster(raster, pm, selectedRegionMasks, selectedQualityMasks, stxIdx);
 
-                        }
+                            recordCount = computeAllStxForRaster(raster, pm, selectedRegionMasks, selectedQualityMasks, regionalGroupedMask, qualityGroupedMask, stxIdx);
+
                         stxIdx += recordCount;
                         totalRecordCount += recordCount;
                     } else {
                         for (int rasterIdx = 0; rasterIdx < selectedBands.length; rasterIdx++) {
                             final Band band = selectedBands[rasterIdx];
                             RasterDataNode raster = getProduct().getRasterDataNode(band.getName());
-                            if (combineQualityMasks) {
-                                recordCount = computeAllStxForRaster(raster, pm, selectedRegionMasks, comboQualityMasks, stxIdx);
-                            } else {
-                                recordCount = computeAllStxForRaster(raster, pm, selectedRegionMasks, selectedQualityMasks, stxIdx);
 
-                            }
+                                recordCount = computeAllStxForRaster(raster, pm, selectedRegionMasks, selectedQualityMasks, regionalGroupedMask, qualityGroupedMask, stxIdx);
+
                             stxIdx += recordCount;
                             totalRecordCount += recordCount;
                         }
@@ -830,7 +827,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
     }
 
 
-    private int computeAllStxForRaster(RasterDataNode raster, ProgressMonitor pm, final Mask[] regionMasks, final Mask[] qualityMasks, int stxIdx) {
+    private int computeAllStxForRaster(RasterDataNode raster, ProgressMonitor pm, final Mask[] regionMasks, final Mask[] qualityMasks, final Mask regionGroupedMask, final Mask qualityGroupedMask, int stxIdx) {
 
         int recordCount = 0;
 
@@ -840,7 +837,10 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
                     computeStx(raster, pm, null, null, stxIdx + recordCount);
                     recordCount++;
                 }
-                if (qualityMasks != null) {
+                if (qualityGroupedMask != null) {
+                    computeStx(raster, pm, null, qualityGroupedMask, stxIdx + recordCount);
+                    recordCount++;
+                } else if (qualityMasks != null) {
                     for (Mask qualityMask : qualityMasks) {
                         if (qualityMask != null) {
                             computeStx(raster, pm, null, qualityMask, stxIdx + recordCount);
@@ -851,19 +851,42 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
             }
 
 
-            if (regionMasks != null) {
+            if (regionGroupedMask != null) {
+                if (computePanel.isIncludeNoQuality()) {
+                    computeStx(raster, pm, regionGroupedMask, null, stxIdx + recordCount);
+                    recordCount++;
+                }
+                if (qualityGroupedMask != null) {
+                    computeStx(raster, pm, regionGroupedMask, qualityGroupedMask, stxIdx + recordCount);
+                    recordCount++;
+                } else {
+                    if (qualityMasks != null) {
+                        for (Mask qualityMask : qualityMasks) {
+                            if (qualityMask != null) {
+                                computeStx(raster, pm, regionGroupedMask, qualityMask, stxIdx + recordCount);
+                            }
+                            recordCount++;
+                        }
+                    }
+                }
+            } else if (regionMasks != null) {
                 for (Mask regionMask : regionMasks) {
                     if (regionMask != null) {
                         if (computePanel.isIncludeNoQuality()) {
                             computeStx(raster, pm, regionMask, null, stxIdx + recordCount);
                             recordCount++;
                         }
-                        if (qualityMasks != null) {
-                            for (Mask qualityMask : qualityMasks) {
-                                if (qualityMask != null) {
-                                    computeStx(raster, pm, regionMask, qualityMask, stxIdx + recordCount);
+                        if (qualityGroupedMask != null) {
+                            computeStx(raster, pm, regionMask, qualityGroupedMask, stxIdx + recordCount);
+                            recordCount++;
+                        } else {
+                            if (qualityMasks != null) {
+                                for (Mask qualityMask : qualityMasks) {
+                                    if (qualityMask != null) {
+                                        computeStx(raster, pm, regionMask, qualityMask, stxIdx + recordCount);
+                                    }
+                                    recordCount++;
                                 }
-                                recordCount++;
                             }
                         }
                     }
@@ -928,7 +951,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
                 case UNION:
                     return StringUtils.join(expressionPartsArray, " || ");
                 case COMPLEMENT:
-                    for (int i=0; i< expressionPartsArray.length; i++) {
+                    for (int i = 0; i < expressionPartsArray.length; i++) {
                         expressionPartsArray[i] = "!" + expressionPartsArray[i];
                     }
                     return StringUtils.join(expressionPartsArray, " && ");
@@ -939,8 +962,6 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
         return null;
     }
-
-
 
 
     private Mask combineMasks(Mask[] masks, String maskName, int combinationType, Product product) {
