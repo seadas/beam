@@ -36,8 +36,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 
 /**
@@ -63,9 +61,8 @@ class MultipleRoiComputePanelQmasks extends JPanel {
     public enum MaskGrouping {
         COMPLEMENT("COMPLEMENT"),
         INTERSECTION("INTERSECTION"),
-        SEPARATE("SEPARATE"),
-        UNION("UNION");
-
+        UNION("UNION"),
+        NONE("NONE");
 
         private MaskGrouping(String name) {
             this.name = name;
@@ -114,7 +111,7 @@ class MultipleRoiComputePanelQmasks extends JPanel {
 
     private boolean includeFullScene = true;
     private boolean includeNoQuality = true;
-    private MaskGrouping qualityMaskGrouping = MaskGrouping.SEPARATE;
+    private MaskGrouping qualityMaskGrouping = MaskGrouping.NONE;
 
     private boolean isRunning = false;
 
@@ -222,7 +219,7 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.INTERSECTION);
         regionalMaskGroupingComboBox.setMinimumSize(regionalMaskGroupingComboBox.getPreferredSize());
-        regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.SEPARATE);
+        regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.NONE);
         panel.add(regionalMaskGroupingComboBox, gbc);
 
         return panel;
@@ -242,7 +239,7 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.INTERSECTION);
         qualityMaskGroupingComboBox.setMinimumSize(qualityMaskGroupingComboBox.getPreferredSize());
-        qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.SEPARATE);
+        qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.NONE);
         panel.add(qualityMaskGroupingComboBox, gbc);
 
         return panel;
@@ -270,7 +267,7 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         JPanel checkBoxPane = getQualitySelectAllNonePanel();
 
         qualityMaskGroupingComboBox = new JComboBox(MaskGrouping.values());
-        qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.SEPARATE);
+        qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.NONE);
 
         gbc.weighty = 0;
         gbc.insets.top = 5;
@@ -323,7 +320,7 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         JPanel checkBoxPane = getRegionSelectAllNonePanel();
 
         regionalMaskGroupingComboBox = new JComboBox(MaskGrouping.values());
-        regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.SEPARATE);
+        regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.NONE);
 
 
         gbc.weighty = 0;
@@ -347,7 +344,7 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         gbc.insets.top = 5;
         panel.add(includeFullSceneCheckBox, gbc);
 
-        
+
         panel.setMinimumSize(panel.getPreferredSize());
         panel.setPreferredSize(panel.getPreferredSize());
 

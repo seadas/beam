@@ -117,9 +117,10 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
     private int numStxRegions = 0;
     private int totalRecordCount = 0;
 
-    private String NO_NAN_BANDNAME = "tmp_no_nan_2dw7gi4kg97kgkd9034kf";
+    private String NO_NAN_BANDNAME = "Stx_No_NaN_temporary_band_2dw7gi4kg97kgkd9034kf";
     RasterDataNode noNanBandRaster = null;
-    private String COMBINATION_QUALITY_MASKNAME = "Combination_Mask_14rmvm4t30id";
+    private String COMBINATION_QUALITY_MASKNAME = "Stx_Quality_Mask";
+    private String COMBINATION_REGIONAL_MASKNAME = "Stx_Regional_Mask";
 
 
     private int plotMinHeight = 300;
@@ -577,6 +578,9 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
         }
 
 
+        numQualityMasks = getMasksToProcessCount(selectedQualityMasks, computePanel.isIncludeNoQuality(), computePanel.getQualityMaskGrouping());
+        numRegionMasks = getMasksToProcessCount(selectedQualityMasks, computePanel.isIncludeFullScene(), computePanel.getRegionalMaskGrouping());
+
         numStxRegions = numBands * numRegionMasks * numQualityMasks;
         System.out.println("numStxRegions=" + numStxRegions);
 
@@ -620,17 +624,8 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
                 }
                 pm.beginTask(title, numberOfProgressSteps);
 
-                boolean combineQualityMasks = true;  // right now this feature won't work at least for the regional masks where you actually have to add and remove
-                // the mask.  It is intended for creation intersection, union, or complement of all selected quality masks
-                // the breakage occurs during cleanup when trying to delete the temporary masks.
-//                if (MultipleRoiComputePanelQmasks.MaskGrouping.INTERSECTION == computePanel.getQualityMaskGrouping() ) {
-//                    combineQualityMasks = true;
-//                }
-                Mask qualityGroupedMask = null;
-                Mask regionalGroupedMask = null;
-                Mask tmpComboQualityMask = null;
-                Mask[] qualityGroupedMasks = null;
-                Mask[] regionalGroupedMasks = null;
+                Mask[] qualityMasksToProcess = null;
+                Mask[] regionalMasksToProcess = null;
 
 
                 try {
@@ -638,50 +633,8 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
                         addNoNanBand(getProduct());
                     }
 
-
-                    if (combineQualityMasks && selectedQualityMasks != null) {
-                        String combinedMaskExpression = combineMaskExpressions(selectedQualityMasks, computePanel.getQualityMaskGrouping());
-
-                        if (combinedMaskExpression != null && combinedMaskExpression.length() > 0) {
-                            boolean qualityMaskExists = false;
-
-                            //  comboQualityMask = combineMasks(selectedQualityMasks, COMBINATION_QUALITY_MASKNAME, 1, getProduct());
-
-
-                            // determine if mask already exists and overwrite it
-                            final ProductNodeGroup<Mask> maskGroup = getProduct().getMaskGroup();
-
-                            String[] maskGroupNodeNames = new String[maskGroup.getNodeNames().length];
-                            int i = 0;
-                            for (String name : maskGroup.getNodeNames()) {
-                                maskGroupNodeNames[i] = name;
-                                i++;
-                            }
-
-                            for (String name : maskGroupNodeNames) {
-                                if (name.equals(COMBINATION_QUALITY_MASKNAME)) {
-                                    qualityMaskExists = true;
-                                    maskGroup.get(name).getImageConfig().setValue("expression", combinedMaskExpression);
-                                    qualityGroupedMask = maskGroup.get(name);
-                                }
-                            }
-
-
-                            if (!qualityMaskExists && combinedMaskExpression != null) {
-                                // todo if we add this then removal causes breakage
-                                qualityGroupedMask = Mask.BandMathsType.create(COMBINATION_QUALITY_MASKNAME, "", getProduct().getSceneRasterWidth(), getProduct().getSceneRasterHeight(),
-                                        combinedMaskExpression, Color.RED, 0.5);
-                                getProduct().getMaskGroup().add(qualityGroupedMask);
-                            }
-
-                            if (qualityGroupedMask != null) {
-                                qualityGroupedMasks = new Mask[1];
-                                qualityGroupedMasks[0] = qualityGroupedMask;
-                            }
-                        } else {
-                            combineQualityMasks = false;
-                        }
-                    }
+                    qualityMasksToProcess = getMasksToProcess(selectedQualityMasks, COMBINATION_QUALITY_MASKNAME, computePanel.isIncludeNoQuality(), computePanel.getQualityMaskGrouping());
+                    regionalMasksToProcess = getMasksToProcess(selectedRegionMasks, COMBINATION_REGIONAL_MASKNAME, computePanel.isIncludeFullScene(), computePanel.getRegionalMaskGrouping());
 
                     int stxIdx = 0;
                     totalRecordCount = 0;
@@ -691,7 +644,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
                     if (computePanel.isUseViewBandRaster()) {
                         RasterDataNode raster = getRaster();
 
-                            recordCount = computeAllStxForRaster(raster, pm, selectedRegionMasks, selectedQualityMasks, regionalGroupedMask, qualityGroupedMask, stxIdx);
+                        recordCount = computeAllStxForRaster(raster, pm, regionalMasksToProcess, qualityMasksToProcess, stxIdx);
 
                         stxIdx += recordCount;
                         totalRecordCount += recordCount;
@@ -700,7 +653,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
                             final Band band = selectedBands[rasterIdx];
                             RasterDataNode raster = getProduct().getRasterDataNode(band.getName());
 
-                                recordCount = computeAllStxForRaster(raster, pm, selectedRegionMasks, selectedQualityMasks, regionalGroupedMask, qualityGroupedMask, stxIdx);
+                            recordCount = computeAllStxForRaster(raster, pm, regionalMasksToProcess, qualityMasksToProcess, stxIdx);
 
                             stxIdx += recordCount;
                             totalRecordCount += recordCount;
@@ -827,78 +780,130 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
     }
 
 
-    private int computeAllStxForRaster(RasterDataNode raster, ProgressMonitor pm, final Mask[] regionMasks, final Mask[] qualityMasks, final Mask regionGroupedMask, final Mask qualityGroupedMask, int stxIdx) {
+    // includes null mask if requested
+    private int getMasksToProcessCount(Mask[] selectedMasks, boolean includeNull, MultipleRoiComputePanelQmasks.MaskGrouping maskGrouping) {
 
-        int recordCount = 0;
+        int masksToProcessCount = 0;
 
-        if (raster != null) {
-            if (computePanel.isIncludeFullScene()) {
-                if (computePanel.isIncludeNoQuality()) {
-                    computeStx(raster, pm, null, null, stxIdx + recordCount);
-                    recordCount++;
+        if (includeNull) {
+            masksToProcessCount++;
+        }
+
+        if (selectedMasks != null && selectedMasks.length > 0) {
+            int selectedMasksCount = 0;
+
+            for (Mask mask : selectedMasks) {
+                if (mask != null) {
+                    selectedMasksCount++;
                 }
-                if (qualityGroupedMask != null) {
-                    computeStx(raster, pm, null, qualityGroupedMask, stxIdx + recordCount);
-                    recordCount++;
-                } else if (qualityMasks != null) {
-                    for (Mask qualityMask : qualityMasks) {
-                        if (qualityMask != null) {
-                            computeStx(raster, pm, null, qualityMask, stxIdx + recordCount);
-                        }
-                        recordCount++;
+            }
+
+            if (maskGrouping == MultipleRoiComputePanelQmasks.MaskGrouping.NONE) {
+                masksToProcessCount += selectedMasksCount;
+            } else {
+                masksToProcessCount++;
+            }
+        }
+
+        return masksToProcessCount;
+    }
+
+
+    // includes null mask if requested
+    private Mask[] getMasksToProcess(Mask[] selectedMasks, String maskName, boolean includeNull, MultipleRoiComputePanelQmasks.MaskGrouping maskGrouping) {
+
+        int masksToProcessCount = getMasksToProcessCount(selectedMasks, includeNull, maskGrouping);
+        if (masksToProcessCount == 0) {
+            return null;
+        }
+
+        Mask[] masksToProcess = new Mask[masksToProcessCount];
+        int index = 0;
+
+        if (includeNull) {
+            masksToProcess[index] = null;
+            index++;
+        }
+
+        if (selectedMasks != null && selectedMasks.length > 0) {
+
+            if (maskGrouping == MultipleRoiComputePanelQmasks.MaskGrouping.NONE) {
+                for (Mask mask : selectedMasks) {
+                    if (mask != null) {
+                        masksToProcess[index] = mask;
+                        index++;
                     }
+                }
+            } else {
+                Mask logicallyCombinedMask = getLogicallyCombinedMask(selectedMasks, maskName, maskGrouping);
+                if (logicallyCombinedMask != null) {
+                    masksToProcess[index] = logicallyCombinedMask;
+                }
+            }
+        }
+
+        return masksToProcess;
+    }
+
+
+    private Mask getLogicallyCombinedMask(Mask[] selectedMasks, String maskName, MultipleRoiComputePanelQmasks.MaskGrouping maskGrouping) {
+
+        if (selectedMasks == null || maskName == null || maskGrouping == null || getProduct() == null) {
+            return null;
+        }
+
+        Mask logicallyCombinedMask = null;
+        boolean maskAlreadyExists = false;
+
+        String combinedMaskExpression = combineMaskExpressions(selectedMasks, maskGrouping);
+
+        if (combinedMaskExpression != null && combinedMaskExpression.length() > 0 && getProduct().getMaskGroup() != null) {
+
+            final ProductNodeGroup<Mask> maskGroup = getProduct().getMaskGroup();
+
+            // determine if mask already exists and if it does overwrite it
+            for (String name : maskGroup.getNodeNames()) {
+                if (name != null && name.equals(maskName)) {
+                    maskAlreadyExists = true;
+                    maskGroup.get(name).getImageConfig().setValue("expression", combinedMaskExpression);
+                    logicallyCombinedMask = maskGroup.get(name);
                 }
             }
 
 
-            if (regionGroupedMask != null) {
-                if (computePanel.isIncludeNoQuality()) {
-                    computeStx(raster, pm, regionGroupedMask, null, stxIdx + recordCount);
-                    recordCount++;
-                }
-                if (qualityGroupedMask != null) {
-                    computeStx(raster, pm, regionGroupedMask, qualityGroupedMask, stxIdx + recordCount);
-                    recordCount++;
-                } else {
-                    if (qualityMasks != null) {
-                        for (Mask qualityMask : qualityMasks) {
-                            if (qualityMask != null) {
-                                computeStx(raster, pm, regionGroupedMask, qualityMask, stxIdx + recordCount);
-                            }
-                            recordCount++;
-                        }
-                    }
-                }
-            } else if (regionMasks != null) {
-                for (Mask regionMask : regionMasks) {
-                    if (regionMask != null) {
-                        if (computePanel.isIncludeNoQuality()) {
-                            computeStx(raster, pm, regionMask, null, stxIdx + recordCount);
-                            recordCount++;
-                        }
-                        if (qualityGroupedMask != null) {
-                            computeStx(raster, pm, regionMask, qualityGroupedMask, stxIdx + recordCount);
-                            recordCount++;
-                        } else {
-                            if (qualityMasks != null) {
-                                for (Mask qualityMask : qualityMasks) {
-                                    if (qualityMask != null) {
-                                        computeStx(raster, pm, regionMask, qualityMask, stxIdx + recordCount);
-                                    }
-                                    recordCount++;
-                                }
-                            }
-                        }
-                    }
-                }
+            //  if mask did not exist then create it
+            if (!maskAlreadyExists) {
+                logicallyCombinedMask = Mask.BandMathsType.create(maskName, "", getProduct().getSceneRasterWidth(), getProduct().getSceneRasterHeight(),
+                        combinedMaskExpression, Color.RED, 0.5);
+                maskGroup.add(logicallyCombinedMask);
             }
-
 
         }
 
+        return logicallyCombinedMask;
+    }
+
+
+    private int computeAllStxForRaster(RasterDataNode raster, ProgressMonitor pm, final Mask[] regionMasks, final Mask[] qualityMasks, int stxIdx) {
+
+        int recordCount = 0;
+
+        if (raster == null || regionMasks == null || qualityMasks == null) {
+            return recordCount;
+        }
+
+        for (Mask regionMask : regionMasks) {
+            for (Mask qualityMask : qualityMasks) {
+                computeStx(raster, pm, regionMask, qualityMask, stxIdx + recordCount);
+                recordCount++;
+            }
+        }
 
         return recordCount;
     }
+
+
+
 
 
     private int getFullPixelCount(RasterDataNode raster, ProgressMonitor pm, Mask mask) {
