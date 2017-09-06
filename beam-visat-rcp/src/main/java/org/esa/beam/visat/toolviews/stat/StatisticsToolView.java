@@ -200,6 +200,6 @@ public class StatisticsToolView extends AbstractStatisticsToolView {
 
     @Override
     protected PagePanel createPagePanel() {
-        return new StatisticsPanelQmasks(this, getDescriptor().getHelpId());
+        return new StatisticsPanel(this, getDescriptor().getHelpId());
     }
 }
