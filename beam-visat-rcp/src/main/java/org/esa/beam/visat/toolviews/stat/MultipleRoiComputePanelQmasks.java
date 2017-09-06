@@ -58,6 +58,7 @@ class MultipleRoiComputePanelQmasks extends JPanel {
 
 
 
+
     public enum MaskGrouping {
         COMPLEMENT("COMPLEMENT"),
         INTERSECTION("INTERSECTION"),
@@ -107,6 +108,12 @@ class MultipleRoiComputePanelQmasks extends JPanel {
     private JComboBox qualityMaskGroupingComboBox;
     private JComboBox regionalMaskGroupingComboBox;
 
+    private JTextField qualityGroupMaskNameTextfield = new JTextField("Stx_Quality_Mask");
+    private JTextField regionalGroupMaskNameTextfield = new JTextField("Stx_Regional_Mask");
+
+    private JPanel qualityGroupMaskNamePanel = new JPanel();
+    private JPanel regionalGroupMaskNamePanel = new JPanel();
+
     private boolean validFields = true;
 
     private boolean includeFullScene = true;
@@ -144,7 +151,7 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         panel.add(topPane, gbc);
 
         gbc = GridBagUtils.restoreConstraints(gbc);
-        includeFullSceneCheckBox = new JCheckBox("Include Full Scene");
+        includeFullSceneCheckBox = new JCheckBox("Include Full Scene (unmasked)");
         includeFullSceneCheckBox.setSelected(includeFullScene);
         includeFullSceneCheckBox.addActionListener(new ActionListener() {
 
@@ -254,7 +261,7 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
 
-        includeNoQualityCheckBox = new JCheckBox("Include No Quality Constraints");
+        includeNoQualityCheckBox = new JCheckBox("Include unmasked");
         includeNoQualityCheckBox.setSelected(includeFullScene);
         includeNoQualityCheckBox.addActionListener(new ActionListener() {
 
@@ -273,18 +280,25 @@ class MultipleRoiComputePanelQmasks extends JPanel {
 
         qualityMaskGroupingComboBox = new JComboBox(MaskGrouping.values());
         qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.NONE);
+        qualityMaskGroupingComboBox.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+                if (qualityMaskGroupingComboBox.getSelectedItem() == MaskGrouping.NONE) {
+                    qualityGroupMaskNameTextfield.setEnabled(false);
+                } else {
+                    qualityGroupMaskNameTextfield.setEnabled(true);
+                }
+            }
+        });
 
         gbc.weighty = 0;
-        gbc.insets.top = 5;
-        gbc.gridy++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel.add(getQualityMaskGroupingPanel(), gbc);
 
         gbc.gridy++;
-        gbc.insets.top = 0;
+        gbc.insets.top = 5;
         panel.add(maskFilterPane, gbc);
 
         gbc.gridy++;
+        gbc.insets.top = 0;
         panel.add(maskNameListPane, gbc);
 
         gbc.gridy++;
@@ -294,6 +308,15 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         gbc.insets.bottom = 5;
         gbc.insets.top = 5;
         panel.add(includeNoQualityCheckBox, gbc);
+
+
+        gbc.gridy++;
+        panel.add(getQualityMaskGroupingPanel(), gbc);
+
+        gbc.gridy++;
+        gbc.fill = GridBagConstraints.NONE;
+        qualityGroupMaskNamePanel = getTextfieldPanel("Grouped Mask", qualityGroupMaskNameTextfield);
+        panel.add(qualityGroupMaskNamePanel, gbc);
 
 
         panel.setMinimumSize(panel.getPreferredSize());
@@ -326,19 +349,27 @@ class MultipleRoiComputePanelQmasks extends JPanel {
 
         regionalMaskGroupingComboBox = new JComboBox(MaskGrouping.values());
         regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.NONE);
+        regionalMaskGroupingComboBox.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+                if (regionalMaskGroupingComboBox.getSelectedItem() == MaskGrouping.NONE) {
+                    regionalGroupMaskNameTextfield.setEnabled(false);
+                } else {
+                    regionalGroupMaskNameTextfield.setEnabled(true);
+                }
+            }
+        });
+
 
 
         gbc.weighty = 0;
         gbc.insets.top = 5;
-        gbc.gridy++;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        panel.add(getRegionalMaskGroupingPanel(), gbc);
 
         gbc.gridy++;
-        gbc.insets.top = 0;
         panel.add(maskFilterPane, gbc);
 
         gbc.gridy++;
+        gbc.insets.top = 0;
         panel.add(maskNameListPane, gbc);
 
         gbc.gridy++;
@@ -349,9 +380,31 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         gbc.insets.top = 5;
         panel.add(includeFullSceneCheckBox, gbc);
 
+        gbc.gridy++;
+        panel.add(getRegionalMaskGroupingPanel(), gbc);
+
+        gbc.gridy++;
+        gbc.fill = GridBagConstraints.NONE;
+        regionalGroupMaskNamePanel = getTextfieldPanel("Grouped Mask", regionalGroupMaskNameTextfield);
+        panel.add(regionalGroupMaskNamePanel, gbc);
 
         panel.setMinimumSize(panel.getPreferredSize());
         panel.setPreferredSize(panel.getPreferredSize());
+
+        return panel;
+    }
+
+
+    private JPanel getTextfieldPanel(String label, JTextField textfield) {
+
+        JPanel panel = GridBagUtils.createPanel();
+        GridBagConstraints gbc = GridBagUtils.createConstraints();
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.insets.right = 3;
+        panel.add(new JLabel(label), gbc);
+        gbc.insets.right = 0;
+        gbc.gridx++;
+        panel.add(textfield, gbc);
 
         return panel;
     }
@@ -1254,5 +1307,21 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         updateRunButton(!running);
     }
 
+
+    public JTextField getQualityGroupMaskNameTextfield() {
+        return qualityGroupMaskNameTextfield;
+    }
+
+    public void setQualityGroupMaskNameTextfield(JTextField qualityGroupMaskNameTextfield) {
+        this.qualityGroupMaskNameTextfield = qualityGroupMaskNameTextfield;
+    }
+
+    public JTextField getRegionalGroupMaskNameTextfield() {
+        return regionalGroupMaskNameTextfield;
+    }
+
+    public void setRegionalGroupMaskNameTextfield(JTextField regionalGroupMaskNameTextfield) {
+        this.regionalGroupMaskNameTextfield = regionalGroupMaskNameTextfield;
+    }
 
 }

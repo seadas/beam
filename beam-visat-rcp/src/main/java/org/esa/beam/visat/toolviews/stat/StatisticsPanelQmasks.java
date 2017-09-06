@@ -119,8 +119,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
     private String NO_NAN_BANDNAME = "Stx_No_NaN_temporary_band_2dw7gi4kg97kgkd9034kf";
     RasterDataNode noNanBandRaster = null;
-    private String COMBINATION_QUALITY_MASKNAME = "Stx_Quality_Mask";
-    private String COMBINATION_REGIONAL_MASKNAME = "Stx_Regional_Mask";
+
 
 
     private int plotMinHeight = 300;
@@ -643,8 +642,9 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
                         addNoNanBand(getProduct());
                     }
 
-                    qualityMasksToProcess = getMasksToProcess(selectedQualityMasks, COMBINATION_QUALITY_MASKNAME, computePanel.isIncludeNoQuality(), computePanel.getQualityMaskGrouping());
-                    regionalMasksToProcess = getMasksToProcess(selectedRegionMasks, COMBINATION_REGIONAL_MASKNAME, computePanel.isIncludeFullScene(), computePanel.getRegionalMaskGrouping());
+
+                    qualityMasksToProcess = getMasksToProcess(selectedQualityMasks, computePanel.getQualityGroupMaskNameTextfield().getText(), computePanel.isIncludeNoQuality(), computePanel.getQualityMaskGrouping());
+                    regionalMasksToProcess = getMasksToProcess(selectedRegionMasks, computePanel.getRegionalGroupMaskNameTextfield().getText(), computePanel.isIncludeFullScene(), computePanel.getRegionalMaskGrouping());
 
                     int stxIdx = 0;
                     totalRecordCount = 0;
