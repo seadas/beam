@@ -119,6 +119,8 @@ class MultipleRoiComputePanelQmasks extends JPanel {
     private Product product;
     private boolean useViewBandRaster = true;
 
+    private JPanel criteriaPanel = GridBagUtils.createPanel();;
+
     // todo Danny right now this is complicated by creation of a MathBand (bands have been added since initialization)
     // in which case reset is needed so for now setting this to true which is probably better anyway
     // this forces a reset when another band view window is opened
@@ -199,6 +201,9 @@ class MultipleRoiComputePanelQmasks extends JPanel {
 
         tabbedPane.addTab("Quality", getQualityMaskPanel());
         tabbedPane.setToolTipTextAt(2, "Select quality masks");
+
+        tabbedPane.addTab("Criteria", criteriaPanel);
+        tabbedPane.setToolTipTextAt(3, "Statistics criteria");
 
         return tabbedPane;
 
@@ -351,6 +356,10 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         return panel;
     }
 
+
+    public JPanel getCriteriaPanel() {
+        return criteriaPanel;
+    }
 
     private JPanel getBandsPanel() {
 

@@ -183,10 +183,14 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
         BandUnit("Unit"),
         BandValidExpression("Band_Valid_Expression"),
         BandDescription("Band_Description"),
-        MaskMetaDataBreak(COLUMN_BREAK),
-        MaskName("Mask"),
-        MaskDescription("Mask_Description"),
-        MaskExpression("Mask_Expression");
+        RegionalMaskMetaDataBreak(COLUMN_BREAK),
+        RegionalMaskName("Regional_Mask"),
+        RegionalMaskDescription("Regional_Mask_Description"),
+        RegionalMaskExpression("Regional_Mask_Expression"),
+        QualityMaskMetaDataBreak(COLUMN_BREAK),
+        QualityMaskName("Quality_Mask"),
+        QualityMaskDescription("Quality_Mask_Description"),
+        QualityMaskExpression("Quality_Mask_Expression");
 
         MetaDataFields(String name) {
             this.name = name;
@@ -362,7 +366,13 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
         GridBagUtils.addToPanel(rightPanel, computePanel, extendedOptionsPanelConstraints, "gridy=0,fill=NONE,weighty=1,weightx=1");
 
 
-        GridBagUtils.addToPanel(rightPanel, statisticsCriteriaPanel.getCriteriaFormattingTabbedPane(), extendedOptionsPanelConstraints, "gridy=1,fill=BOTH,weighty=0, insets.top=10");
+      //  GridBagUtils.addToPanel(rightPanel, statisticsCriteriaPanel.getCriteriaFormattingTabbedPane(), extendedOptionsPanelConstraints, "gridy=1,fill=BOTH,weighty=0, insets.top=10");
+
+
+        computePanel.getCriteriaPanel().setBorder(UIUtils.createGroupBorder(""));
+
+
+        GridBagUtils.addToPanel(computePanel.getCriteriaPanel(), statisticsCriteriaPanel.getCriteriaFormattingTabbedPane(), extendedOptionsPanelConstraints, "gridy=1,fill=BOTH,weighty=0, insets.top=10, insets.left=5, insets.right=5");
 
         JButton resetToDefaultsButton = new JButton("Reset");
         resetToDefaultsButton.addActionListener(new ActionListener() {
@@ -579,7 +589,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
 
         numQualityMasks = getMasksToProcessCount(selectedQualityMasks, computePanel.isIncludeNoQuality(), computePanel.getQualityMaskGrouping());
-        numRegionMasks = getMasksToProcessCount(selectedQualityMasks, computePanel.isIncludeFullScene(), computePanel.getRegionalMaskGrouping());
+        numRegionMasks = getMasksToProcessCount(selectedRegionMasks, computePanel.isIncludeFullScene(), computePanel.getRegionalMaskGrouping());
 
         numStxRegions = numBands * numRegionMasks * numQualityMasks;
         System.out.println("numStxRegions=" + numStxRegions);
@@ -855,7 +865,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
         Mask logicallyCombinedMask = null;
         boolean maskAlreadyExists = false;
 
-        String combinedMaskExpression = combineMaskExpressions(selectedMasks, maskGrouping);
+        String combinedMaskExpression = combineMaskExpressions(selectedMasks, maskGrouping, maskName);
 
         if (combinedMaskExpression != null && combinedMaskExpression.length() > 0 && getProduct().getMaskGroup() != null) {
 
@@ -931,7 +941,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
     }
 
 
-    private String combineMaskExpressions(Mask[] masks, MultipleRoiComputePanelQmasks.MaskGrouping maskGrouping) {
+    private String combineMaskExpressions(Mask[] masks, MultipleRoiComputePanelQmasks.MaskGrouping maskGrouping, String maskName) {
 
         if (masks == null || masks.length == 0) {
             return null;
@@ -940,7 +950,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
         ArrayList<String> expressionParts = new ArrayList<String>();
 
         for (Mask mask : masks) {
-            if (mask != null && mask.getName() != null && mask.getName().length() > 0) {
+            if (mask != null && mask.getName() != null && mask.getName().length() > 0 && !mask.getName().equals(maskName)) {
                 expressionParts.add(mask.getName());
             }
         }
@@ -1318,7 +1328,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
     }
 
 
-    private JPanel createStatPanel(Stx stx, final Mask mask, final Mask qualityMask, int stxIdx, RasterDataNode raster) {
+    private JPanel createStatPanel(Stx stx, final Mask regionalMask, final Mask qualityMask, int stxIdx, RasterDataNode raster) {
 
         final Histogram histogram = stx.getHistogram();
         final int row = stxIdx + 1;  // account for header
@@ -1564,7 +1574,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
             double percentFilled = (totalPixelCount > 0) ? (1.0 * validPixelCount / totalPixelCount) : 0;
 
             totalPixels = new Object[][]{
-                    new Object[]{"Pixels", stx.getRawTotal()},
+                    new Object[]{"Regional_Pixels", stx.getRawTotal()},
                     new Object[]{"Valid_Pixels", validPixelCount},
                     new Object[]{"Fraction_Valid", percentFilled}
             };
@@ -1742,14 +1752,25 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
             if (includeMaskMetaData) {
                 if (includeColumnBreaks) {
-                    metaDataFieldsHashMap.put(MetaDataFields.MaskMetaDataBreak, fieldIdx);
+                    metaDataFieldsHashMap.put(MetaDataFields.RegionalMaskMetaDataBreak, fieldIdx);
                     fieldIdx++;
                 }
-                metaDataFieldsHashMap.put(MetaDataFields.MaskName, fieldIdx);
+                metaDataFieldsHashMap.put(MetaDataFields.RegionalMaskName, fieldIdx);
                 fieldIdx++;
-                metaDataFieldsHashMap.put(MetaDataFields.MaskDescription, fieldIdx);
+                metaDataFieldsHashMap.put(MetaDataFields.RegionalMaskDescription, fieldIdx);
                 fieldIdx++;
-                metaDataFieldsHashMap.put(MetaDataFields.MaskExpression, fieldIdx);
+                metaDataFieldsHashMap.put(MetaDataFields.RegionalMaskExpression, fieldIdx);
+                fieldIdx++;
+
+                if (includeColumnBreaks) {
+                    metaDataFieldsHashMap.put(MetaDataFields.QualityMaskMetaDataBreak, fieldIdx);
+                    fieldIdx++;
+                }
+                metaDataFieldsHashMap.put(MetaDataFields.QualityMaskName, fieldIdx);
+                fieldIdx++;
+                metaDataFieldsHashMap.put(MetaDataFields.QualityMaskDescription, fieldIdx);
+                fieldIdx++;
+                metaDataFieldsHashMap.put(MetaDataFields.QualityMaskExpression, fieldIdx);
                 fieldIdx++;
             }
 
@@ -1888,10 +1909,10 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
         String maskName = "";
         String maskDescription = "";
         String maskExpression = "";
-        if (mask != null) {
-            maskName = mask.getName();
-            maskDescription = mask.getDescription();
-            maskExpression = mask.getImageConfig().getValue("expression");
+        if (regionalMask != null) {
+            maskName = regionalMask.getName();
+            maskDescription = regionalMask.getDescription();
+            maskExpression = regionalMask.getImageConfig().getValue("expression");
         }
 
         String qualityMaskName = "";
@@ -1961,10 +1982,15 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
         addFieldToSpreadsheet(row, MetaDataFields.BandValidExpression, raster.getValidPixelExpression());
         addFieldToSpreadsheet(row, MetaDataFields.BandDescription, raster.getDescription());
 
-        addFieldToSpreadsheet(row, MetaDataFields.MaskMetaDataBreak, COLUMN_BREAK);
-        addFieldToSpreadsheet(row, MetaDataFields.MaskName, maskName);
-        addFieldToSpreadsheet(row, MetaDataFields.MaskDescription, maskDescription);
-        addFieldToSpreadsheet(row, MetaDataFields.MaskExpression, maskExpression);
+        addFieldToSpreadsheet(row, MetaDataFields.RegionalMaskMetaDataBreak, COLUMN_BREAK);
+        addFieldToSpreadsheet(row, MetaDataFields.RegionalMaskName, maskName);
+        addFieldToSpreadsheet(row, MetaDataFields.RegionalMaskDescription, maskDescription);
+        addFieldToSpreadsheet(row, MetaDataFields.RegionalMaskExpression, maskExpression);
+
+        addFieldToSpreadsheet(row, MetaDataFields.QualityMaskMetaDataBreak, COLUMN_BREAK);
+        addFieldToSpreadsheet(row, MetaDataFields.QualityMaskName, qualityMaskName);
+        addFieldToSpreadsheet(row, MetaDataFields.QualityMaskDescription, qualityMaskDescription);
+        addFieldToSpreadsheet(row, MetaDataFields.QualityMaskExpression, qualityMaskExpression);
 
 
         // Add Header first time through
@@ -2149,7 +2175,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
 
 
         JPanel mainPane = GridBagUtils.createPanel();
-        mainPane.setBorder(UIUtils.createGroupBorder(getSubPanelTitle(mask, raster))); /*I18N*/
+        mainPane.setBorder(UIUtils.createGroupBorder(getSubPanelTitle(regionalMask, qualityMask, raster))); /*I18N*/
         GridBagConstraints gbcMain = GridBagUtils.createConstraints("");
         gbcMain.gridx = 0;
         gbcMain.gridy = 0;
@@ -2233,10 +2259,20 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
         return (Math.pow(10, histogram.getHighValue(0)) - Math.pow(10, histogram.getLowValue(0))) / histogram.getNumBins(0);
     }
 
-    private String getSubPanelTitle(Mask mask, RasterDataNode raster) {
+    private String getSubPanelTitle(Mask regionalMask, Mask qualityMask, RasterDataNode raster) {
+        StringBuilder sb = new StringBuilder("");
+
+        if (regionalMask != null && regionalMask.getName() != null) {
+            sb.append("regional_mask=" + regionalMask.getName() + "  ");
+        }
+
+        if (qualityMask != null && qualityMask.getName() != null) {
+            sb.append("quality_mask=" + qualityMask.getName() + " ");
+        }
+
         final String title;
-        if (mask != null) {
-            title = String.format("<html><b>%s</b> with ROI-mask <b>%s</b></html>", raster.getName(), mask.getName());
+        if (sb.length() > 0) {
+            title = String.format("<html><b>%s  (%s)</b></html>", raster.getName(), sb.toString());
         } else {
             title = String.format("<html><b>%s</b></html>", raster.getName());
         }
