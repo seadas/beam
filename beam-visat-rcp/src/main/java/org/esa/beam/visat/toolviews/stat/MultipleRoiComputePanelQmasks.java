@@ -111,8 +111,8 @@ class MultipleRoiComputePanelQmasks extends JPanel {
     private JTextField qualityGroupMaskNameTextfield = new JTextField("Stx_Quality_Mask");
     private JTextField regionalGroupMaskNameTextfield = new JTextField("Stx_Regional_Mask");
 
-    private JPanel qualityGroupMaskNamePanel = new JPanel();
-    private JPanel regionalGroupMaskNamePanel = new JPanel();
+    private JPanel qualityGroupMaskNamePanel;
+    private JPanel regionalGroupMaskNamePanel;
 
     private boolean validFields = true;
 
@@ -151,7 +151,7 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         panel.add(topPane, gbc);
 
         gbc = GridBagUtils.restoreConstraints(gbc);
-        includeFullSceneCheckBox = new JCheckBox("Include Full Scene (unmasked)");
+        includeFullSceneCheckBox = new JCheckBox("Include Unmasked (Full Scene)");
         includeFullSceneCheckBox.setSelected(includeFullScene);
         includeFullSceneCheckBox.addActionListener(new ActionListener() {
 
@@ -261,7 +261,7 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
 
-        includeNoQualityCheckBox = new JCheckBox("Include unmasked");
+        includeNoQualityCheckBox = new JCheckBox("Include Unmasked");
         includeNoQualityCheckBox.setSelected(includeFullScene);
         includeNoQualityCheckBox.addActionListener(new ActionListener() {
 
@@ -278,40 +278,34 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         JPanel maskNameListPane = getQualityNameListPanel();
         JPanel checkBoxPane = getQualitySelectAllNonePanel();
 
+
+
+
+
+
         qualityMaskGroupingComboBox = new JComboBox(MaskGrouping.values());
-        qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.NONE);
-        qualityMaskGroupingComboBox.addActionListener (new ActionListener () {
-            public void actionPerformed(ActionEvent e) {
-                if (qualityMaskGroupingComboBox.getSelectedItem() == MaskGrouping.NONE) {
-                    qualityGroupMaskNameTextfield.setEnabled(false);
-                } else {
-                    qualityGroupMaskNameTextfield.setEnabled(true);
-                }
-            }
-        });
+
 
         gbc.weighty = 0;
+        gbc.insets.top = 10;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        panel.add(includeNoQualityCheckBox, gbc);
 
         gbc.gridy++;
-        gbc.insets.top = 5;
         panel.add(maskFilterPane, gbc);
 
-        gbc.gridy++;
         gbc.insets.top = 0;
+        gbc.gridy++;
         panel.add(maskNameListPane, gbc);
 
         gbc.gridy++;
         panel.add(checkBoxPane, gbc);
 
-        gbc.gridy++;
-        gbc.insets.bottom = 5;
-        gbc.insets.top = 5;
-        panel.add(includeNoQualityCheckBox, gbc);
 
-
+        gbc.insets.top = 10;
         gbc.gridy++;
         panel.add(getQualityMaskGroupingPanel(), gbc);
+        gbc.insets.top = 0;
 
         gbc.gridy++;
         gbc.fill = GridBagConstraints.NONE;
@@ -319,8 +313,34 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         panel.add(qualityGroupMaskNamePanel, gbc);
 
 
+
+
+        // Add filler panel at bottom which expands as needed to force all components within this panel to the top
+        gbc = GridBagUtils.restoreConstraints(gbc);
+        gbc.weighty = 1;
+        gbc.gridy += 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(new JPanel(), gbc);
+
+
+
         panel.setMinimumSize(panel.getPreferredSize());
         panel.setPreferredSize(panel.getPreferredSize());
+
+
+
+        qualityGroupMaskNamePanel.setVisible(true);
+        qualityMaskGroupingComboBox.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+                if (qualityMaskGroupingComboBox.getSelectedItem() == MaskGrouping.NONE) {
+                    qualityGroupMaskNamePanel.setVisible(false);
+                } else {
+                    qualityGroupMaskNamePanel.setVisible(true);
+                }
+            }
+        });
+        qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.NONE);
+
 
         return panel;
     }
@@ -348,48 +368,58 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         JPanel checkBoxPane = getRegionSelectAllNonePanel();
 
         regionalMaskGroupingComboBox = new JComboBox(MaskGrouping.values());
-        regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.NONE);
-        regionalMaskGroupingComboBox.addActionListener (new ActionListener () {
-            public void actionPerformed(ActionEvent e) {
-                if (regionalMaskGroupingComboBox.getSelectedItem() == MaskGrouping.NONE) {
-                    regionalGroupMaskNameTextfield.setEnabled(false);
-                } else {
-                    regionalGroupMaskNameTextfield.setEnabled(true);
-                }
-            }
-        });
-
 
 
         gbc.weighty = 0;
-        gbc.insets.top = 5;
+        gbc.insets.top = 10;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-
-        gbc.gridy++;
-        panel.add(maskFilterPane, gbc);
-
-        gbc.gridy++;
-        gbc.insets.top = 0;
-        panel.add(maskNameListPane, gbc);
-
-        gbc.gridy++;
-        panel.add(checkBoxPane, gbc);
-
-        gbc.gridy++;
-        gbc.insets.bottom = 5;
-        gbc.insets.top = 5;
         panel.add(includeFullSceneCheckBox, gbc);
 
-        gbc.gridy++;
-        panel.add(getRegionalMaskGroupingPanel(), gbc);
+        gbc.gridy += 1;
+        panel.add(maskFilterPane, gbc);
 
-        gbc.gridy++;
+        gbc.insets.top = 0;
+        gbc.gridy += 1;
+        panel.add(maskNameListPane, gbc);
+
+        gbc.gridy += 1;
+        panel.add(checkBoxPane, gbc);
+
+
+        gbc.insets.top = 10;
+        gbc.gridy += 1;
+        panel.add(getRegionalMaskGroupingPanel(), gbc);
+        gbc.insets.top = 0;
+
+        gbc.gridy += 1;
         gbc.fill = GridBagConstraints.NONE;
+
         regionalGroupMaskNamePanel = getTextfieldPanel("Grouped Mask", regionalGroupMaskNameTextfield);
         panel.add(regionalGroupMaskNamePanel, gbc);
 
+        regionalGroupMaskNamePanel.setVisible(true);
+
+
+        // Add filler panel at bottom which expands as needed to force all components within this panel to the top
+        gbc = GridBagUtils.restoreConstraints(gbc);
+        gbc.weighty = 1;
+        gbc.gridy += 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(new JPanel(), gbc);
+
         panel.setMinimumSize(panel.getPreferredSize());
         panel.setPreferredSize(panel.getPreferredSize());
+
+        regionalMaskGroupingComboBox.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+                if (regionalMaskGroupingComboBox.getSelectedItem() == MaskGrouping.NONE) {
+                    regionalGroupMaskNamePanel.setVisible(false);
+                } else {
+                    regionalGroupMaskNamePanel.setVisible(true);
+                }
+            }
+        });
+        regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.NONE);
 
         return panel;
     }
@@ -405,6 +435,10 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         gbc.insets.right = 0;
         gbc.gridx++;
         panel.add(textfield, gbc);
+
+
+        panel.setMinimumSize(panel.getPreferredSize());
+        panel.setPreferredSize(panel.getPreferredSize());
 
         return panel;
     }
@@ -425,7 +459,8 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         GridBagConstraints gbc = GridBagUtils.createConstraints();
         // todo Danny uncomment this to get Bands working and to test out this feature
 
-        gbc.insets.top = 5;
+        gbc.weighty = 0;
+        gbc.insets.top = 10;
         panel.add(bandFilterPane, gbc);
         gbc.insets.top = 0;
 
@@ -435,6 +470,14 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         gbc.gridy++;
         gbc.insets.bottom = 5;
         panel.add(bandNameCheckBoxPane, gbc);
+
+        // Add filler panel at bottom which expands as needed to force all components within this panel to the top
+        gbc = GridBagUtils.restoreConstraints(gbc);
+        gbc.weighty = 1;
+        gbc.gridy += 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(new JPanel(), gbc);
+
 
         panel.setMinimumSize(panel.getPreferredSize());
         panel.setPreferredSize(panel.getPreferredSize());
@@ -729,7 +772,7 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         DefaultListModel maskNameListModel = new DefaultListModel();
 
         regionMaskNameSearchField = new QuickListFilterField(maskNameListModel);
-        regionMaskNameSearchField.setHintText("Mask Filter");
+        regionMaskNameSearchField.setHintText("Mask Search Filter");
         regionMaskNameSearchField.setMinimumSize(regionMaskNameSearchField.getPreferredSize());
         regionMaskNameSearchField.setPreferredSize(regionMaskNameSearchField.getPreferredSize());
 
@@ -920,7 +963,7 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         DefaultListModel maskNameListModel = new DefaultListModel();
 
         qualityMaskNameSearchField = new QuickListFilterField(maskNameListModel);
-        qualityMaskNameSearchField.setHintText("Quality Mask Filter");
+        qualityMaskNameSearchField.setHintText("Mask Search Filter");
         qualityMaskNameSearchField.setMinimumSize(qualityMaskNameSearchField.getPreferredSize());
         qualityMaskNameSearchField.setPreferredSize(qualityMaskNameSearchField.getPreferredSize());
 
@@ -1269,7 +1312,7 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         DefaultListModel maskNameListModel = new DefaultListModel();
 
         bandNameSearchField = new QuickListFilterField(maskNameListModel);
-        bandNameSearchField.setHintText("Band Filter");
+        bandNameSearchField.setHintText("Band Search Filter");
         bandNameSearchField.setMinimumSize(bandNameSearchField.getPreferredSize());
         bandNameSearchField.setPreferredSize(bandNameSearchField.getPreferredSize());
 

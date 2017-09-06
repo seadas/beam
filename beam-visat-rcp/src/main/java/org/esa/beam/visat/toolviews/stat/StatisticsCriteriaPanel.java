@@ -935,6 +935,29 @@ public class StatisticsCriteriaPanel {
 
     // "Bins" Tab Variables and Components
 
+
+    public JPanel getCriteriaPanel() {
+
+        final JPanel panel = GridBagUtils.createPanel();
+        GridBagConstraints gbc = GridBagUtils.createConstraints();
+
+        gbc.insets.top = 10;
+        gbc.weighty = 0;
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.fill = GridBagConstraints.NONE;
+        panel.add(getCriteriaFormattingTabbedPane(), gbc);
+
+
+        // Add filler panel at bottom which expands as needed to force all components within this panel to the top
+        gbc = GridBagUtils.restoreConstraints(gbc);
+        gbc.weighty = 1;
+        gbc.gridy += 1;
+        gbc.fill = GridBagConstraints.BOTH;
+        panel.add(new JPanel(), gbc);
+
+        return panel;
+    }
+
     public JTabbedPane getCriteriaFormattingTabbedPane() {
 
         JTabbedPane tabbedPane = new JTabbedPane();

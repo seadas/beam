@@ -371,7 +371,7 @@ class StatisticsPanelQmasks extends PagePanel implements MultipleRoiComputePanel
         computePanel.getCriteriaPanel().setBorder(UIUtils.createGroupBorder(""));
 
 
-        GridBagUtils.addToPanel(computePanel.getCriteriaPanel(), statisticsCriteriaPanel.getCriteriaFormattingTabbedPane(), extendedOptionsPanelConstraints, "gridy=1,fill=BOTH,weighty=0, insets.top=10, insets.left=5, insets.right=5");
+        GridBagUtils.addToPanel(computePanel.getCriteriaPanel(), statisticsCriteriaPanel.getCriteriaPanel(), extendedOptionsPanelConstraints, "insets.top=10, insets.left=5, insets.right=5");
 
         JButton resetToDefaultsButton = new JButton("Reset");
         resetToDefaultsButton.addActionListener(new ActionListener() {
