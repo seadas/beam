@@ -30,6 +30,7 @@ import org.esa.beam.visat.VisatApp;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.text.Position;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -66,6 +67,23 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         NONE("NONE");
 
         private MaskGrouping(String name) {
+            this.name = name;
+        }
+
+        private final String name;
+
+        public String toString() {
+            return name;
+        }
+    }
+
+    public enum MaskGroupingToolTips {
+        COMPLEMENT("<html>Complement of the selected masks<br>For example: !Mask1 && !Mask2</html>"),
+        INTERSECTION("<html>Intersection of the selected masks<br>For example: Mask1 && Mask2</html>"),
+        UNION("<html>Union of the selected masks<br>For example: Mask1 || Mask2</html>"),
+        NONE("<html>Display individual masks<br>Do not combine</html>");
+
+        private MaskGroupingToolTips(String name) {
             this.name = name;
         }
 
@@ -219,12 +237,16 @@ class MultipleRoiComputePanelQmasks extends JPanel {
 
     private JPanel getRegionalMaskGroupingPanel() {
 
+        String maskGroupingToolTip = "<html>Specify how to logically group selected masks<br>NONE results in individual mask statistics</html>";
+
+        JLabel jLabel = new JLabel("Mask Grouping");
+
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
         gbc.anchor = GridBagConstraints.WEST;
         gbc.weightx = 0;
         gbc.insets.right = 3;
-        panel.add(new JLabel("Mask Grouping"), gbc);
+        panel.add(jLabel, gbc);
         gbc.insets.right = 0;
         gbc.gridx++;
         gbc.weightx = 1;
@@ -234,17 +256,25 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.NONE);
         panel.add(regionalMaskGroupingComboBox, gbc);
 
+        jLabel.setToolTipText(maskGroupingToolTip);
+        regionalMaskGroupingComboBox.setToolTipText(maskGroupingToolTip);
+
         return panel;
     }
 
+
     private JPanel getQualityMaskGroupingPanel() {
+
+        String maskGroupingToolTip = "<html>Specify how to logically group selected masks<br>NONE results in individual mask statistics</html>";
+
+        JLabel jLabel = new JLabel("Mask Grouping");
 
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
         gbc.anchor = GridBagConstraints.WEST;
         gbc.weightx = 0;
         gbc.insets.right = 3;
-        panel.add(new JLabel("Mask Grouping"), gbc);
+        panel.add(jLabel, gbc);
         gbc.insets.right = 0;
         gbc.gridx++;
         gbc.weightx = 1;
@@ -253,6 +283,9 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         qualityMaskGroupingComboBox.setMinimumSize(qualityMaskGroupingComboBox.getPreferredSize());
         qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.NONE);
         panel.add(qualityMaskGroupingComboBox, gbc);
+
+        jLabel.setToolTipText(maskGroupingToolTip);
+        qualityMaskGroupingComboBox.setToolTipText(maskGroupingToolTip);
 
         return panel;
     }
@@ -278,12 +311,15 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         JPanel maskNameListPane = getQualityNameListPanel();
         JPanel checkBoxPane = getQualitySelectAllNonePanel();
 
-
-
-
-
+        
 
         qualityMaskGroupingComboBox = new JComboBox(MaskGrouping.values());
+
+        final MyComboBoxRenderer myComboBoxRenderer = new MyComboBoxRenderer();
+        myComboBoxRenderer.setTooltipList(MaskGroupingToolTips.values());
+
+        qualityMaskGroupingComboBox.setRenderer(myComboBoxRenderer);
+        qualityMaskGroupingComboBox.setEditable(false);
 
 
         gbc.weighty = 0;
@@ -370,6 +406,13 @@ class MultipleRoiComputePanelQmasks extends JPanel {
         regionalMaskGroupingComboBox = new JComboBox(MaskGrouping.values());
 
 
+        final MyComboBoxRenderer myComboBoxRenderer = new MyComboBoxRenderer();
+        myComboBoxRenderer.setTooltipList(MaskGroupingToolTips.values());
+
+        regionalMaskGroupingComboBox.setRenderer(myComboBoxRenderer);
+        regionalMaskGroupingComboBox.setEditable(false);
+
+
         gbc.weighty = 0;
         gbc.insets.top = 10;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -427,15 +470,16 @@ class MultipleRoiComputePanelQmasks extends JPanel {
 
     private JPanel getTextfieldPanel(String label, JTextField textfield) {
 
+        JLabel jLabel = new JLabel(label);
+
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets.right = 3;
-        panel.add(new JLabel(label), gbc);
+        panel.add(jLabel, gbc);
         gbc.insets.right = 0;
         gbc.gridx++;
         panel.add(textfield, gbc);
-
 
         panel.setMinimumSize(panel.getPreferredSize());
         panel.setPreferredSize(panel.getPreferredSize());
@@ -1365,6 +1409,49 @@ class MultipleRoiComputePanelQmasks extends JPanel {
 
     public void setRegionalGroupMaskNameTextfield(JTextField regionalGroupMaskNameTextfield) {
         this.regionalGroupMaskNameTextfield = regionalGroupMaskNameTextfield;
+    }
+
+
+    class MyComboBoxRenderer extends BasicComboBoxRenderer {
+
+        private MaskGroupingToolTips[] tooltips;
+        private Boolean[] enabledList;
+
+
+
+
+        public Component getListCellRendererComponent(JList list, Object value,
+                                                      int index, boolean isSelected, boolean cellHasFocus) {
+
+
+            if (isSelected) {
+
+                if (-1 < index && index < tooltips.length) {
+                    list.setToolTipText(tooltips[index].toString());
+
+                    setBackground(Color.blue);
+                    setForeground(Color.white);
+                }
+
+
+            } else {
+                setBackground(Color.white);
+                setForeground(Color.black);
+            }
+
+
+            setFont(list.getFont());
+            setText((value == null) ? "" : value.toString());
+            return this;
+        }
+
+        public void setTooltipList(MaskGroupingToolTips[] tooltipList) {
+            this.tooltips = tooltipList;
+        }
+
+        public void setEnabledList(Boolean[] enabledList) {
+            this.enabledList = enabledList;
+        }
     }
 
 }
