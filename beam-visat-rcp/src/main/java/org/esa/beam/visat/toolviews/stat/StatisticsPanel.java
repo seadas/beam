@@ -564,27 +564,6 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
             numBands = selectedBands.length;
         }
 
-        if (selectedRegionMasks != null) {
-            for (Mask tmpMask : selectedRegionMasks) {
-                if (tmpMask != null) {
-                    numRegionMasks++;
-                }
-            }
-        }
-        if (computePanel.isIncludeFullScene()) {
-            numRegionMasks++;
-        }
-
-        if (selectedQualityMasks != null) {
-            for (Mask tmpMask : selectedQualityMasks) {
-                if (tmpMask != null) {
-                    numQualityMasks++;
-                }
-            }
-        }
-        if (computePanel.isIncludeNoQuality()) {
-            numQualityMasks++;
-        }
 
 
         numQualityMasks = getMasksToProcessCount(selectedQualityMasks, computePanel.isIncludeNoQuality(), computePanel.getQualityMaskGrouping());
@@ -784,9 +763,9 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         resultText.setLength(0);
         contentPanel.removeAll();
 
-        swingWorker.execute();
+       // swingWorker.execute();
 
-        // swingWorker.executeWithBlocking();
+         swingWorker.executeWithBlocking();
     }
 
 

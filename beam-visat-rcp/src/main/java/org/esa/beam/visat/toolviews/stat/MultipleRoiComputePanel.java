@@ -331,6 +331,7 @@ class MultipleRoiComputePanel extends JPanel {
         panel.add(includeNoQualityCheckBox, gbc);
 
         gbc.gridy++;
+        gbc.anchor = GridBagConstraints.CENTER;
         panel.add(maskFilterPane, gbc);
 
         gbc.insets.top = 0;
@@ -338,7 +339,9 @@ class MultipleRoiComputePanel extends JPanel {
         panel.add(maskNameListPane, gbc);
 
         gbc.gridy++;
+        gbc.anchor = GridBagConstraints.CENTER;
         panel.add(checkBoxPane, gbc);
+        gbc.anchor = GridBagConstraints.WEST;
 
 
         gbc.insets.top = 10;
@@ -423,6 +426,7 @@ class MultipleRoiComputePanel extends JPanel {
         panel.add(includeFullSceneCheckBox, gbc);
 
         gbc.gridy += 1;
+        gbc.anchor = GridBagConstraints.CENTER;
         panel.add(maskFilterPane, gbc);
 
         gbc.insets.top = 0;
@@ -430,7 +434,9 @@ class MultipleRoiComputePanel extends JPanel {
         panel.add(maskNameListPane, gbc);
 
         gbc.gridy += 1;
+        gbc.anchor = GridBagConstraints.CENTER;
         panel.add(checkBoxPane, gbc);
+        gbc.anchor = GridBagConstraints.WEST;
 
 
         gbc.insets.top = 10;
@@ -502,12 +508,13 @@ class MultipleRoiComputePanel extends JPanel {
 
         JPanel bandFilterPane = getBandFilterPanel();
         JPanel bandNameListPane = getBandNameListPanel();
-        JPanel bandNameCheckBoxPane = getBandNameSelectAllNonePanel();
+        JPanel checkBoxPane = getBandNameSelectAllNonePanel();
 
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
-        // todo Danny uncomment this to get Bands working and to test out this feature
 
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.CENTER;
         gbc.weighty = 0;
         gbc.insets.top = 10;
         panel.add(bandFilterPane, gbc);
@@ -517,8 +524,9 @@ class MultipleRoiComputePanel extends JPanel {
         panel.add(bandNameListPane, gbc);
 
         gbc.gridy++;
-        gbc.insets.bottom = 5;
-        panel.add(bandNameCheckBoxPane, gbc);
+        gbc.anchor = GridBagConstraints.CENTER;
+        panel.add(checkBoxPane, gbc);
+        gbc.anchor = GridBagConstraints.WEST;
 
         // Add filler panel at bottom which expands as needed to force all components within this panel to the top
         gbc = GridBagUtils.restoreConstraints(gbc);
@@ -838,6 +846,7 @@ class MultipleRoiComputePanel extends JPanel {
         GridBagConstraints gbc = GridBagUtils.createConstraints();
         gbc.insets.top = 3;
         gbc.insets.bottom = 3;
+        gbc.anchor = GridBagConstraints.CENTER;
         panel.add(regionMaskNameSearchField, gbc);
         //    gbc.gridx++;
         //    panel.add(showMaskManagerButton, gbc);
@@ -923,9 +932,10 @@ class MultipleRoiComputePanel extends JPanel {
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
 
+        gbc.anchor = GridBagConstraints.CENTER;
         panel.add(regionMaskSelectAllCheckBox, gbc);
 
-        gbc.gridy++;
+        gbc.gridx++;
         panel.add(regionMaskSelectNoneCheckBox, gbc);
 
         return panel;
@@ -1038,6 +1048,7 @@ class MultipleRoiComputePanel extends JPanel {
         GridBagConstraints gbc = GridBagUtils.createConstraints();
         gbc.insets.top = 3;
         gbc.insets.bottom = 3;
+        gbc.anchor = GridBagConstraints.CENTER;
         panel.add(qualityMaskNameSearchField, gbc);
 
         return panel;
@@ -1117,9 +1128,10 @@ class MultipleRoiComputePanel extends JPanel {
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
 
+        gbc.anchor = GridBagConstraints.CENTER;
         panel.add(qualityMaskSelectAllCheckBox, gbc);
 
-        gbc.gridy++;
+        gbc.gridx++;
         panel.add(qualityMaskSelectNoneCheckBox, gbc);
 
         return panel;
@@ -1358,9 +1370,10 @@ class MultipleRoiComputePanel extends JPanel {
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
 
+        gbc.anchor = GridBagConstraints.CENTER;
         panel.add(bandNameselectAllCheckBox, gbc);
 
-        gbc.gridy++;
+        gbc.gridx++;
         panel.add(bandNameselectNoneCheckBox, gbc);
 
         return panel;
@@ -1387,6 +1400,7 @@ class MultipleRoiComputePanel extends JPanel {
         GridBagConstraints gbc = GridBagUtils.createConstraints();
         gbc.insets.top = 3;
         gbc.insets.bottom = 3;
+        gbc.anchor = GridBagConstraints.CENTER;
         panel.add(bandNameSearchField, gbc);
         //    gbc.gridx++;
         //    panel.add(showMaskManagerButton, gbc);
