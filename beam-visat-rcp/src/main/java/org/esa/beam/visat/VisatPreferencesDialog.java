@@ -998,6 +998,12 @@ public class VisatPreferencesDialog extends ConfigDialog {
             param.addParamChangeListener(paramChangeListener);
             configParams.addParameter(param);
 
+
+            param = new Parameter(StatisticsToolView.PARAM_KEY_MINMAX_ENABLED, StatisticsToolView.PARAM_DEFVAL_MINMAX_ENABLED);
+            param.getProperties().setLabel(StatisticsToolView.PARAM_LABEL_MINMAX_ENABLED);
+            param.addParamChangeListener(paramChangeListener);
+            configParams.addParameter(param);
+
             param = new Parameter(StatisticsToolView.PARAM_KEY_TOTAL_PIXEL_COUNT_ENABLED, StatisticsToolView.PARAM_DEFVAL_TOTAL_PIXEL_COUNT_ENABLED);
             param.getProperties().setLabel(StatisticsToolView.PARAM_LABEL_TOTAL_PIXEL_COUNT_ENABLED);
             param.addParamChangeListener(paramChangeListener);
@@ -1133,6 +1139,10 @@ public class VisatPreferencesDialog extends ConfigDialog {
             gbcFields.gridy++;
 
             param = getConfigParam(StatisticsToolView.PARAM_KEY_MEDIAN_ENABLED);
+            addParamToPane(fieldsPane, param, gbcFields);
+            gbcFields.gridy++;
+
+            param = getConfigParam(StatisticsToolView.PARAM_KEY_MINMAX_ENABLED);
             addParamToPane(fieldsPane, param, gbcFields);
             gbcFields.gridy++;
 
@@ -1401,6 +1411,7 @@ public class VisatPreferencesDialog extends ConfigDialog {
             getConfigParam(StatisticsToolView.PARAM_KEY_TIME_SERIES_METADATA_ENABLED).setValue(StatisticsToolView.PARAM_DEFVAL_TIME_SERIES_METADATA_ENABLED, errorHandler);
             getConfigParam(StatisticsToolView.PARAM_KEY_PROJECTION_PARAMETERS_METADATA_ENABLED).setValue(StatisticsToolView.PARAM_DEFVAL_PROJECTION_PARAMETERS_METADATA_ENABLED, errorHandler);
             getConfigParam(StatisticsToolView.PARAM_KEY_MEDIAN_ENABLED).setValue(StatisticsToolView.PARAM_DEFVAL_MEDIAN_ENABLED, errorHandler);
+            getConfigParam(StatisticsToolView.PARAM_KEY_MINMAX_ENABLED).setValue(StatisticsToolView.PARAM_DEFVAL_MINMAX_ENABLED, errorHandler);
             getConfigParam(StatisticsToolView.PARAM_KEY_TOTAL_PIXEL_COUNT_ENABLED).setValue(StatisticsToolView.PARAM_DEFVAL_TOTAL_PIXEL_COUNT_ENABLED, errorHandler);
             getConfigParam(StatisticsToolView.PARAM_KEY_HISTOGRAM_STATS_ENABLED).setValue(StatisticsToolView.PARAM_DEFVAL_HISTOGRAM_STATS_ENABLED, errorHandler);
             getConfigParam(StatisticsToolView.PARAM_KEY_SPREADSHEET_DECIMAL_PLACES).setValue(StatisticsToolView.PARAM_DEFVAL_SPREADSHEET_DECIMAL_PLACES, errorHandler);

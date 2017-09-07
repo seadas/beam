@@ -59,6 +59,9 @@ public class StatisticsCriteriaPanel {
     private boolean includeMedian = StatisticsToolView.PARAM_DEFVAL_MEDIAN_ENABLED;
     private JCheckBox includeMedianCheckBox = null;
 
+    private boolean includeMinMax = StatisticsToolView.PARAM_DEFVAL_MINMAX_ENABLED;
+    private JCheckBox includeMinMaxCheckBox = null;
+
     private boolean includeHistogramStats = StatisticsToolView.PARAM_DEFVAL_HISTOGRAM_STATS_ENABLED;
     private JCheckBox includeHistogramStatsCheckBox = null;
 
@@ -198,6 +201,7 @@ public class StatisticsCriteriaPanel {
 
         // Fields
         includeMedian = getPreferencesMedianEnabled();
+        includeMinMax = getPreferencesMinMaxEnabled();
         includeTotalPixels = getPreferencesTotalPixelsEnabled();
         includeHistogramStats = getPreferencesHistogramStatsEnabled();
         includeFileMetaData = getPreferencesFileMetaDataEnabled();
@@ -257,6 +261,7 @@ public class StatisticsCriteriaPanel {
         // Fields
         includeTotalPixelsCheckBox.setSelected(includeTotalPixels);
         includeMedianCheckBox.setSelected(includeMedian);
+        includeMinMaxCheckBox.setSelected(includeMinMax);
         includeHistogramStatsCheckBox.setSelected(includeHistogramStats);
         includeFileMetaDataCheckBox.setSelected(includeFileMetaData);
         includeMaskMetaDataCheckBox.setSelected(includeMaskMetaData);
@@ -349,6 +354,9 @@ public class StatisticsCriteriaPanel {
 
         includeMedianCheckBox = new JCheckBox(StatisticsToolView.PARAM_LABEL_MEDIAN_ENABLED);
         includeMedianCheckBox.setToolTipText(StatisticsToolView.PARAM_TOOLTIP_MEDIAN_ENABLED);
+
+        includeMinMaxCheckBox = new JCheckBox(StatisticsToolView.PARAM_LABEL_MINMAX_ENABLED);
+        includeMinMaxCheckBox.setToolTipText(StatisticsToolView.PARAM_TOOLTIP_MINMAX_ENABLED);
 
         includeHistogramStatsCheckBox = new JCheckBox(StatisticsToolView.PARAM_LABEL_HISTOGRAM_STATS_ENABLED);
 
@@ -531,6 +539,14 @@ public class StatisticsCriteriaPanel {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 includeMedian = includeMedianCheckBox.isSelected();
+
+            }
+        });
+
+        includeMinMaxCheckBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                includeMinMax = includeMinMaxCheckBox.isSelected();
 
             }
         });
@@ -799,6 +815,10 @@ public class StatisticsCriteriaPanel {
         return includeMedian;
     }
 
+    public boolean includeMinMax() {
+        return includeMinMax;
+    }
+
     public boolean includeTotalPixels() {
         return includeTotalPixels;
     }
@@ -1041,6 +1061,8 @@ public class StatisticsCriteriaPanel {
         gbc.gridy += 1;
         panel.add(includeMedianCheckBox, gbc);
 
+        gbc.gridy += 1;
+        panel.add(includeMinMaxCheckBox, gbc);
 
         gbc.gridy += 1;
         panel.add(thresholdsPanel, gbc);
@@ -1641,6 +1663,16 @@ public class StatisticsCriteriaPanel {
             return StatisticsToolView.PARAM_DEFVAL_MEDIAN_ENABLED;
         }
     }
+
+    public boolean getPreferencesMinMaxEnabled() {
+
+        if (configuration != null) {
+            return configuration.getPropertyBool(StatisticsToolView.PARAM_KEY_MINMAX_ENABLED, StatisticsToolView.PARAM_DEFVAL_MINMAX_ENABLED);
+        } else {
+            return StatisticsToolView.PARAM_DEFVAL_MINMAX_ENABLED;
+        }
+    }
+
 
     public boolean getPreferencesTotalPixelsEnabled() {
 

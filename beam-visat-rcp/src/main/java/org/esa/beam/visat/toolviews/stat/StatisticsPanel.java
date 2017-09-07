@@ -1568,11 +1568,19 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
 
         Object[][] firstData =
                 new Object[][]{
-                        new Object[]{"Minimum", stx.getMinimum()},
-                        new Object[]{"Maximum", stx.getMaximum()},
                         new Object[]{"Mean", stx.getMean()}
                 };
         dataRows += firstData.length;
+
+
+        Object[][] minMaxData = null;
+        if (statisticsCriteriaPanel.includeMinMax()) {
+            minMaxData =    new Object[][]{
+                    new Object[]{"Minimum", stx.getMinimum()},
+                    new Object[]{"Maximum", stx.getMaximum()}
+            };
+            dataRows += minMaxData.length;
+        }
 
 
         Object[] medianObject = null;
@@ -1662,6 +1670,13 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         if (medianObject != null) {
             tableData[tableDataIdx] = medianObject;
             tableDataIdx++;
+        }
+
+        if (minMaxData != null) {
+            for (int i = 0; i < minMaxData.length; i++) {
+                tableData[tableDataIdx] = minMaxData[i];
+                tableDataIdx++;
+            }
         }
 
         if (secondData != null) {

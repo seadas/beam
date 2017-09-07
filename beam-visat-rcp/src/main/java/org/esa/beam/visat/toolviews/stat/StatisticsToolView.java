@@ -57,7 +57,12 @@ public class StatisticsToolView extends AbstractStatisticsToolView {
     public static final String PARAM_LABEL_MEDIAN_ENABLED = "Include Median";
     public static final String PARAM_TOOLTIP_MEDIAN_ENABLED = "Calculation of median will increase computation time";
     public static final String PARAM_KEY_MEDIAN_ENABLED = "statistics.median.enabled";
-    public static final boolean PARAM_DEFVAL_MEDIAN_ENABLED = true;
+    public static final boolean PARAM_DEFVAL_MEDIAN_ENABLED = false;
+
+    public static final String PARAM_LABEL_MINMAX_ENABLED = "Include Min/Max";
+    public static final String PARAM_TOOLTIP_MINMAX_ENABLED = "";
+    public static final String PARAM_KEY_MINMAX_ENABLED = "statistics.minMax.enabled";
+    public static final boolean PARAM_DEFVAL_MINMAX_ENABLED = false;
 
     public static final String PARAM_LABEL_TOTAL_PIXEL_COUNT_ENABLED = "Include Total Pixel Count";
     public static final String PARAM_KEY_TOTAL_PIXEL_COUNT_ENABLED = "statistics.totalPixelCount.enabled";
