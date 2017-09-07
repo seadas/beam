@@ -553,8 +553,10 @@ class MultipleRoiComputePanel extends JPanel {
                     }
                     product = null;
                 } else if (product != newRaster.getProduct()) {
+                    clearMaskSelections();
                     if (product != null) {
                         product.removeProductNodeListener(productNodeListener);
+
                     }
                     product = newRaster.getProduct();
                     if (product != null) {
@@ -825,6 +827,15 @@ class MultipleRoiComputePanel extends JPanel {
         updateEnablement();
     }
 
+    public void clearMaskSelections() {
+        if (regionMaskNameList != null) {
+            regionMaskNameList.selectNone();
+        }
+        if (qualityMaskNameList != null) {
+            qualityMaskNameList.selectNone();
+        }
+
+    }
 
     private JPanel getRegionMaskFilterPanel() {
 

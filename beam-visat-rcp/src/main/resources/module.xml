@@ -448,7 +448,7 @@
             <class>org.esa.beam.visat.toolviews.stat.StatisticsToolView</class>
             <title>Statistics View</title>
             <tabTitle>Statistics</tabTitle>
-            <description>Display Statistics for a selected band</description>
+            <description>Display Statistics for selected band(s)</description>
             <!--<smallIcon>/org/esa/beam/resources/images/icons/Statistics16.gif</smallIcon>-->
             <largeIcon>/org/esa/beam/resources/images/icons/Statistics24.gif</largeIcon>
             <helpId>statisticsDialog</helpId>
