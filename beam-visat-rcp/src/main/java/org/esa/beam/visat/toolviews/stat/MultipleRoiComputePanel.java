@@ -64,7 +64,7 @@ class MultipleRoiComputePanel extends JPanel {
         COMPLEMENT("COMPLEMENT"),
         INTERSECTION("INTERSECTION"),
         UNION("UNION"),
-        NONE("NONE");
+        INDIVIDUAL("INDIVIDUAL");
 
         private MaskGrouping(String name) {
             this.name = name;
@@ -82,7 +82,7 @@ class MultipleRoiComputePanel extends JPanel {
         COMPLEMENT("<html>Complement of the selected masks<br>For example: !Mask1 && !Mask2</html>"),
         INTERSECTION("<html>Intersection of the selected masks<br>For example: Mask1 && Mask2</html>"),
         UNION("<html>Union of the selected masks<br>For example: Mask1 || Mask2</html>"),
-        NONE("<html>Display individual masks<br>Do not combine</html>");
+        INDIVIDUAL("<html>Ungrouped.  Display each mask separately</html>");
 
         private MaskGroupingToolTips(String name) {
             this.name = name;
@@ -126,6 +126,8 @@ class MultipleRoiComputePanel extends JPanel {
 
     private JComboBox qualityMaskGroupingComboBox;
     private JComboBox regionalMaskGroupingComboBox;
+    private JLabel regionalMaskGroupingComboBoxLabel = new JLabel("Mask Grouping");
+    private JLabel qualityMaskGroupingComboBoxLabel = new JLabel("Mask Grouping");
 
     private JTextField qualityGroupMaskNameTextfield = new JTextField("Stx_Quality_Mask");
     private JTextField regionalGroupMaskNameTextfield = new JTextField("Stx_Regional_Mask");
@@ -137,7 +139,7 @@ class MultipleRoiComputePanel extends JPanel {
 
     private boolean includeFullScene = true;
     private boolean includeNoQuality = true;
-    private MaskGrouping qualityMaskGrouping = MaskGrouping.NONE;
+    private MaskGrouping qualityMaskGrouping = MaskGrouping.INDIVIDUAL;
 
     private boolean isRunning = false;
 
@@ -220,16 +222,16 @@ class MultipleRoiComputePanel extends JPanel {
         JTabbedPane tabbedPane = new JTabbedPane();
 
         tabbedPane.addTab("Bands", getBandsPanel());
-        tabbedPane.setToolTipTextAt(0, "Select bands for which to create statistics");
+        tabbedPane.setToolTipTextAt(0, "<html>Select bands on which to create statistics<br>By default current band is selected</html>");
 
         tabbedPane.addTab("Regional", getMaskROIPanel());
-        tabbedPane.setToolTipTextAt(1, "Select region of interest masks for which to create statistics");
+        tabbedPane.setToolTipTextAt(1, "Select regional masks for which to create statistics");
 
         tabbedPane.addTab("Quality", getQualityMaskPanel());
-        tabbedPane.setToolTipTextAt(2, "Select quality masks");
+        tabbedPane.setToolTipTextAt(2, "Select quality masks for which to create statistics");
 
         tabbedPane.addTab("Criteria", criteriaPanel);
-        tabbedPane.setToolTipTextAt(3, "Statistics criteria");
+        tabbedPane.setToolTipTextAt(3, "Specify statistical criteria and formatting");
 
         return tabbedPane;
 
@@ -240,24 +242,24 @@ class MultipleRoiComputePanel extends JPanel {
 
         String maskGroupingToolTip = "<html>Specify how to logically group selected masks<br>NONE results in individual mask statistics</html>";
 
-        JLabel jLabel = new JLabel("Mask Grouping");
+//        JLabel jLabel = new JLabel("Mask Grouping");
 
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
         gbc.anchor = GridBagConstraints.WEST;
         gbc.weightx = 0;
         gbc.insets.right = 3;
-        panel.add(jLabel, gbc);
+        panel.add(regionalMaskGroupingComboBoxLabel, gbc);
         gbc.insets.right = 0;
         gbc.gridx++;
         gbc.weightx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.INTERSECTION);
         regionalMaskGroupingComboBox.setMinimumSize(regionalMaskGroupingComboBox.getPreferredSize());
-        regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.NONE);
+        regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.INDIVIDUAL);
         panel.add(regionalMaskGroupingComboBox, gbc);
 
-        jLabel.setToolTipText(maskGroupingToolTip);
+        regionalMaskGroupingComboBoxLabel.setToolTipText(maskGroupingToolTip);
         regionalMaskGroupingComboBox.setToolTipText(maskGroupingToolTip);
 
         return panel;
@@ -268,24 +270,24 @@ class MultipleRoiComputePanel extends JPanel {
 
         String maskGroupingToolTip = "<html>Specify how to logically group selected masks<br>NONE results in individual mask statistics</html>";
 
-        JLabel jLabel = new JLabel("Mask Grouping");
+//        JLabel jLabel = new JLabel("Mask Grouping");
 
         JPanel panel = GridBagUtils.createPanel();
         GridBagConstraints gbc = GridBagUtils.createConstraints();
         gbc.anchor = GridBagConstraints.WEST;
         gbc.weightx = 0;
         gbc.insets.right = 3;
-        panel.add(jLabel, gbc);
+        panel.add(qualityMaskGroupingComboBoxLabel, gbc);
         gbc.insets.right = 0;
         gbc.gridx++;
         gbc.weightx = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.INTERSECTION);
         qualityMaskGroupingComboBox.setMinimumSize(qualityMaskGroupingComboBox.getPreferredSize());
-        qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.NONE);
+        qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.INDIVIDUAL);
         panel.add(qualityMaskGroupingComboBox, gbc);
 
-        jLabel.setToolTipText(maskGroupingToolTip);
+        qualityMaskGroupingComboBoxLabel.setToolTipText(maskGroupingToolTip);
         qualityMaskGroupingComboBox.setToolTipText(maskGroupingToolTip);
 
         return panel;
@@ -369,14 +371,15 @@ class MultipleRoiComputePanel extends JPanel {
         qualityGroupMaskNamePanel.setVisible(true);
         qualityMaskGroupingComboBox.addActionListener (new ActionListener () {
             public void actionPerformed(ActionEvent e) {
-                if (qualityMaskGroupingComboBox.getSelectedItem() == MaskGrouping.NONE) {
+                if (qualityMaskGroupingComboBox.getSelectedItem() == MaskGrouping.INDIVIDUAL) {
                     qualityGroupMaskNamePanel.setVisible(false);
                 } else {
                     qualityGroupMaskNamePanel.setVisible(true);
                 }
             }
         });
-        qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.NONE);
+        qualityMaskGroupingComboBox.setSelectedItem(MaskGrouping.INDIVIDUAL);
+        selectAndEnableQualityCheckBoxes();
 
 
         return panel;
@@ -456,14 +459,15 @@ class MultipleRoiComputePanel extends JPanel {
 
         regionalMaskGroupingComboBox.addActionListener (new ActionListener () {
             public void actionPerformed(ActionEvent e) {
-                if (regionalMaskGroupingComboBox.getSelectedItem() == MaskGrouping.NONE) {
+                if (regionalMaskGroupingComboBox.getSelectedItem() == MaskGrouping.INDIVIDUAL) {
                     regionalGroupMaskNamePanel.setVisible(false);
                 } else {
                     regionalGroupMaskNamePanel.setVisible(true);
                 }
             }
         });
-        regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.NONE);
+        regionalMaskGroupingComboBox.setSelectedItem(MaskGrouping.INDIVIDUAL);
+        selectAndEnableRegionCheckBoxes();
 
         return panel;
     }
@@ -735,6 +739,14 @@ class MultipleRoiComputePanel extends JPanel {
         regionMaskSelectAllCheckBox.setEnabled(numSelected < numEntries);
         regionMaskSelectNoneCheckBox.setSelected(numSelected == 0);
         regionMaskSelectAllCheckBox.setSelected(numSelected == numEntries);
+
+        regionalMaskGroupingComboBoxLabel.setVisible(numSelected > 0);
+        regionalMaskGroupingComboBox.setVisible(numSelected > 0);
+        if (numSelected == 0) {
+            regionalGroupMaskNamePanel.setVisible(false);
+        } else if (regionalMaskGroupingComboBox.getSelectedItem() != MaskGrouping.INDIVIDUAL) {
+            regionalGroupMaskNamePanel.setVisible(true);
+        }
     }
 
 
@@ -932,6 +944,15 @@ class MultipleRoiComputePanel extends JPanel {
         qualityMaskSelectAllCheckBox.setEnabled(numSelected < numEntries);
         qualityMaskSelectNoneCheckBox.setSelected(numSelected == 0);
         qualityMaskSelectAllCheckBox.setSelected(numSelected == numEntries);
+
+        qualityMaskGroupingComboBoxLabel.setVisible(numSelected > 0);
+        qualityMaskGroupingComboBox.setVisible(numSelected > 0);
+        if (numSelected == 0) {
+            qualityGroupMaskNamePanel.setVisible(false);
+        } else if (qualityMaskGroupingComboBox.getSelectedItem() != MaskGrouping.INDIVIDUAL) {
+            qualityGroupMaskNamePanel.setVisible(true);
+        }
+
     }
 
 

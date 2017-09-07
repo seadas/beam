@@ -808,7 +808,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
                 }
             }
 
-            if (maskGrouping == MultipleRoiComputePanel.MaskGrouping.NONE) {
+            if (maskGrouping == MultipleRoiComputePanel.MaskGrouping.INDIVIDUAL) {
                 masksToProcessCount += selectedMasksCount;
             } else {
                 masksToProcessCount++;
@@ -837,7 +837,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
 
         if (selectedMasks != null && selectedMasks.length > 0) {
 
-            if (maskGrouping == MultipleRoiComputePanel.MaskGrouping.NONE) {
+            if (maskGrouping == MultipleRoiComputePanel.MaskGrouping.INDIVIDUAL) {
                 for (Mask mask : selectedMasks) {
                     if (mask != null) {
                         masksToProcess[index] = mask;
