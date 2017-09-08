@@ -121,7 +121,6 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
     RasterDataNode noNanBandRaster = null;
 
 
-
     private int plotMinHeight = 300;
     private int plotMinWidth = 300;
 
@@ -565,7 +564,6 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         }
 
 
-
         numQualityMasks = getMasksToProcessCount(selectedQualityMasks, computePanel.isIncludeNoQuality(), computePanel.getQualityMaskGrouping());
         numRegionMasks = getMasksToProcessCount(selectedRegionMasks, computePanel.isIncludeFullScene(), computePanel.getRegionalMaskGrouping());
 
@@ -763,9 +761,9 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         resultText.setLength(0);
         contentPanel.removeAll();
 
-       // swingWorker.execute();
+        // swingWorker.execute();
 
-         swingWorker.executeWithBlocking();
+        swingWorker.executeWithBlocking();
     }
 
 
@@ -778,21 +776,16 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
             masksToProcessCount++;
         }
 
-        if (selectedMasks != null && selectedMasks.length > 0) {
-            int selectedMasksCount = 0;
+        int selectedMasksCount = getSelectMaskCount(selectedMasks);
 
-            for (Mask mask : selectedMasks) {
-                if (mask != null) {
-                    selectedMasksCount++;
-                }
-            }
-
+        if (getSelectMaskCount(selectedMasks) > 0) {
             if (maskGrouping == MultipleRoiComputePanel.MaskGrouping.INDIVIDUAL) {
                 masksToProcessCount += selectedMasksCount;
             } else {
                 masksToProcessCount++;
             }
         }
+
 
         return masksToProcessCount;
     }
@@ -814,8 +807,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
             index++;
         }
 
-        if (selectedMasks != null && selectedMasks.length > 0) {
-
+        if (getSelectMaskCount(selectedMasks) > 0) {
             if (maskGrouping == MultipleRoiComputePanel.MaskGrouping.INDIVIDUAL) {
                 for (Mask mask : selectedMasks) {
                     if (mask != null) {
@@ -834,6 +826,20 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
         return masksToProcess;
     }
 
+    private int getSelectMaskCount(Mask[] selectedMasks) {
+        int selectedMasksCount = 0;
+
+        if (selectedMasks != null) {
+            int length = selectedMasks.length;
+            for (Mask mask : selectedMasks) {
+                if (mask != null) {
+                    selectedMasksCount++;
+                }
+            }
+        }
+
+        return selectedMasksCount;
+    }
 
     private Mask getLogicallyCombinedMask(Mask[] selectedMasks, String maskName, MultipleRoiComputePanel.MaskGrouping maskGrouping) {
 
@@ -890,9 +896,6 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
 
         return recordCount;
     }
-
-
-
 
 
     private int getFullPixelCount(RasterDataNode raster, ProgressMonitor pm, Mask mask) {
@@ -1575,7 +1578,7 @@ class StatisticsPanel extends PagePanel implements MultipleRoiComputePanel.Compu
 
         Object[][] minMaxData = null;
         if (statisticsCriteriaPanel.includeMinMax()) {
-            minMaxData =    new Object[][]{
+            minMaxData = new Object[][]{
                     new Object[]{"Minimum", stx.getMinimum()},
                     new Object[]{"Maximum", stx.getMaximum()}
             };
