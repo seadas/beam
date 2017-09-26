@@ -276,7 +276,9 @@ public class BeamFileChooser extends JFileChooser {
     }
 
     private boolean isCompoundDocument(File file) {
-        final FileFilter[] filters = getChoosableFileFilters();
+        try {
+            final FileFilter[] filters = getChoosableFileFilters();
+
         for (FileFilter fileFilter : filters) {
             if (fileFilter instanceof BeamFileFilter) {
                 BeamFileFilter beamFileFilter = (BeamFileFilter) fileFilter;
@@ -284,6 +286,10 @@ public class BeamFileChooser extends JFileChooser {
                     return true;
                 }
             }
+        } } catch (ArrayIndexOutOfBoundsException aioobe) {
+System.out.println("file name = " + file);
+aioobe.printStackTrace();
+
         }
         return false;
     }
