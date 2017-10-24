@@ -2114,9 +2114,21 @@
             <shortDescr>SeaDAS Help: Contours</shortDescr>
             <description>Opens the SeaDAS help browser</description>
             <helpId>contourLines</helpId>
-            <placeBefore>helpToolsReproject</placeBefore>
+            <placeBefore>helpToolsGridlines</placeBefore>
         </action>
 
+
+
+        <action>
+            <id>helpToolsGridlines</id>
+            <parent>helpCommonTools</parent>
+            <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
+            <text>Gridlines</text>
+            <shortDescr>SeaDAS Help: Gridlines</shortDescr>
+            <description>Opens the SeaDAS help browser</description>
+            <helpId>mapGridlines</helpId>
+            <placeBefore>helpToolsReproject</placeBefore>
+        </action>
 
 
 
@@ -2180,7 +2192,7 @@
             <id>HelpTopicsColorBlind</id>
             <parent>helpCommonTopics</parent>
             <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
-            <text>Color Blindness Configurations</text>
+            <text>Color Blind Configurations</text>
             <shortDescr>SeaDAS Help: Color Blind Configurations</shortDescr>
             <helpId>colorBlindConfig</helpId>
             <description>Opens the SeaDAS help browser</description>
@@ -2224,10 +2236,43 @@
             <text>SeaDAS Web</text>
             <shortDescr>Opens the SeaDAS home page.</shortDescr>
             <description>Opens the SeaDAS home page with the default web browser.</description>
-            <placeBefore>WebHelpSeaDASForum</placeBefore>
+            <placeBefore>WebHelpSeaDASConfiguration</placeBefore>
             <separatorBefore>true</separatorBefore>
 
         </action>
+
+
+        <action>
+            <id>WebHelpSeaDASConfiguration</id>
+            <parent>help</parent>
+            <class>org.esa.beam.visat.actions.ActionGroup</class>
+            <text>     Configuration</text>
+            <sortChildren>true</sortChildren>
+            <placeBefore>WebHelpSeaDASForum</placeBefore>
+        </action>
+
+
+
+        <action>
+            <id>WebHelpSeaDASRequirements</id>
+            <parent>WebHelpSeaDASConfiguration</parent>
+            <class>org.esa.beam.visat.actions.WebHelpSeaDASRequirementsAction</class>
+            <text>Requirements</text>
+            <shortDescr>Opens the SeaDAS Requirements webpage</shortDescr>
+            <description>Opens the SeaDAS Requirements webpage with the default web browser.</description>
+        </action>
+
+
+        <action>
+            <id>WebHelpSeaDASInstallation</id>
+            <parent>WebHelpSeaDASConfiguration</parent>
+            <class>org.esa.beam.visat.actions.WebHelpSeaDASInstallationAction</class>
+            <text>Installation</text>
+            <shortDescr>Opens the SeaDAS Installation webpage</shortDescr>
+            <description>Opens the SeaDAS Installation webpage with the default web browser.</description>
+        </action>
+
+
 
         <action>
             <id>WebHelpSeaDASForum</id>
@@ -2235,7 +2280,7 @@
             <class>org.esa.beam.visat.actions.ActionGroup</class>
             <text>     Forum</text>
             <sortChildren>true</sortChildren>
-            <placeBefore>WebHelpSeaDASRequirements</placeBefore>
+            <placeBefore>WebHelpSeaDASPresentations</placeBefore>
         </action>
 
 
@@ -2271,56 +2316,69 @@
 
 
 
-
-
-        <action>
-            <id>WebHelpSeaDASRequirements</id>
-            <parent>help</parent>
-            <class>org.esa.beam.visat.actions.WebHelpSeaDASRequirementsAction</class>
-            <text>     Requirements</text>
-            <shortDescr>Opens the SeaDAS Requirements webpage</shortDescr>
-            <description>Opens the SeaDAS Requirements webpage with the default web browser.</description>
-            <placeBefore>WebHelpSeaDASTutorials</placeBefore>
-        </action>
-
-
-        <action>
-            <id>WebHelpSeaDASTutorials</id>
-            <text>     Tutorials</text>
-            <parent>help</parent>
-            <class>org.esa.beam.visat.actions.ActionGroup</class>
-            <description>Opens the SeaDAS tutorials web pages</description>
-            <sortChildren>true</sortChildren>
-            <placeBefore>WebHelpOCHome</placeBefore>
-        </action>
-
-
-        <action>
-            <id>WebHelpSeaDASInstallation</id>
-            <parent>WebHelpSeaDASTutorials</parent>
-            <class>org.esa.beam.visat.actions.WebHelpSeaDASInstallationAction</class>
-            <text>Installation</text>
-            <shortDescr>Opens the SeaDAS Installation webpage</shortDescr>
-            <description>Opens the SeaDAS Installation webpage with the default web browser.</description>
-        </action>
-
-
         <action>
             <id>WebHelpSeaDASPresentations</id>
-            <parent>WebHelpSeaDASTutorials</parent>
+            <parent>help</parent>
             <class>org.esa.beam.visat.actions.WebHelpSeaDASPresentationsAction</class>
-            <text>Presentations</text>
+            <text>     Presentations</text>
             <shortDescr>Opens the SeaDAS Presentations webpage</shortDescr>
             <description>Opens the SeaDAS Presentations webpage with the default web browser.</description>
+            <placeBefore>WebHelpSeaDASVideo</placeBefore>
+
         </action>
 
         <action>
             <id>WebHelpSeaDASVideo</id>
-            <parent>WebHelpSeaDASTutorials</parent>
+            <parent>help</parent>
+            <class>org.esa.beam.visat.actions.ActionGroup</class>
+            <text>     Videos</text>
+            <sortChildren>false</sortChildren>
+            <placeBefore>WebHelpOCHome</placeBefore>
+
+        </action>
+
+
+
+
+        <action>
+            <id>WebHelpSeaDASVideoHome</id>
+            <parent>WebHelpSeaDASVideo</parent>
             <class>org.esa.beam.visat.actions.WebHelpSeaDASVideosAction</class>
-            <text>Videos</text>
-            <shortDescr>Opens the SeaDAS tutorial page.</shortDescr>
-            <description>Opens the SeaDAS tutorial page with the default web browser.</description>
+            <text>Video Tutorials Home</text>
+            <shortDescr>Opens the SeaDAS video tutorials web page.</shortDescr>
+            <description>Opens the SeaDAS video tutorial web page with the default web browser.</description>
+            <placeBefore>WebHelpSeaDASVideoBasics</placeBefore>
+            <separatorAfter>true</separatorAfter>
+
+
+        </action>
+
+
+        <action>
+            <id>WebHelpSeaDASVideoBasics</id>
+            <parent>WebHelpSeaDASVideo</parent>
+            <class>org.esa.beam.visat.actions.WebHelpSeaDASVideoBasicsAction</class>
+            <text>Basics (Getting Started)</text>
+            <shortDescr>Opens the SeaDAS video web page: Basics.</shortDescr>
+            <description>Opens the SeaDAS video web page: Basics with the default web browser.</description>
+        </action>
+
+        <action>
+            <id>WebHelpSeaDASVideoMasks</id>
+            <parent>WebHelpSeaDASVideo</parent>
+            <class>org.esa.beam.visat.actions.WebHelpSeaDASVideoMasksAction</class>
+            <text>Masking</text>
+            <shortDescr>Opens the SeaDAS video web page: Masking.</shortDescr>
+            <description>Opens the SeaDAS video web page: Masking with the default web browser.</description>
+        </action>
+
+        <action>
+            <id>WebHelpSeaDASVideoCaseStudy</id>
+            <parent>WebHelpSeaDASVideo</parent>
+            <class>org.esa.beam.visat.actions.WebHelpSeaDASVideoCaseStudy1Action</class>
+            <text>Case Study: SST Anomalies</text>
+            <shortDescr>Opens the SeaDAS video web page: Case Study.</shortDescr>
+            <description>Opens the SeaDAS video web page: Case Study with the default web browser.</description>
         </action>
 
 
@@ -2344,7 +2402,7 @@
             <id>WebHelpOCForum</id>
             <parent>help</parent>
             <class>org.esa.beam.visat.actions.WebHelpOCForumPage</class>
-            <text>     Forum</text>
+            <text>     OceanColor Forum</text>
             <shortDescr>Opens the OceanColor forum web page.</shortDescr>
             <description>Opens he OceanColor forum web page with the default web browser.</description>
             <placeBefore>WebHelpDataAccess</placeBefore>
@@ -2425,7 +2483,7 @@
             <id>WebHelpSeaBASS</id>
             <parent>WebHelpDataAccess</parent>
             <class>org.esa.beam.visat.actions.WebHelpOCSeaBASSAction</class>
-            <text>SeaBASS Web</text>
+            <text>SeaBASS</text>
             <shortDescr>Opens the SeaBASS web page</shortDescr>
             <description>Opens the SeaBASS web page</description>
 
