@@ -12,11 +12,10 @@ import java.net.URI;
  * Created with IntelliJ IDEA.
  * User: knowles
  * Date: 3/31/16
- * Time: 1:16 PM
+ * Time: 2:19 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ShowTutorialPageAction  extends ExecCommand {
-
+public class WebHelpOCForumPage extends ExecCommand {
     @Override
     public void updateState(final CommandEvent event) {
         setEnabled(Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE));
@@ -34,7 +33,7 @@ public class ShowTutorialPageAction  extends ExecCommand {
 
         try {
             final Desktop desktop = Desktop.getDesktop();
-            desktop.browse(URI.create(homePageUrl+"tutorials/video_tutorials"));
+            desktop.browse(URI.create("https://oceancolor.gsfc.nasa.gov/forum/oceancolor/forum_show.pl"));
         } catch (IOException e) {
             // TODO - handle
         } catch (UnsupportedOperationException e) {
