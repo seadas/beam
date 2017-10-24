@@ -68,6 +68,8 @@ public class CollocateOp extends Operator {
     private static final String NEAREST_NEIGHBOUR = "NEAREST_NEIGHBOUR";
     private static final String BILINEAR_INTERPOLATION = "BILINEAR_INTERPOLATION";
     private static final String CUBIC_CONVOLUTION = "CUBIC_CONVOLUTION";
+    private static final String BICUBIC_CONVOLUTION = "BICUBIC_CONVOLUTION";
+    private static final String BISINC_CONVOLUTION = "BISINC_CONVOLUTION";
 
     @SourceProduct(alias = "master", description = "The source product which serves as master.")
     private Product masterProduct;
@@ -108,7 +110,8 @@ public class CollocateOp extends Operator {
 //    private boolean slaveTiePointGridsBecomeBands;
 
     @Parameter(defaultValue = NEAREST_NEIGHBOUR,
-               description = "The method to be used when resampling the slave grid onto the master grid.")
+               description = "The method to be used when resampling the slave grid onto the master grid.",
+            valueSet = {NEAREST_NEIGHBOUR, BILINEAR_INTERPOLATION, CUBIC_CONVOLUTION, BICUBIC_CONVOLUTION, BISINC_CONVOLUTION})
     private ResamplingType resamplingType;
 
     private transient Map<Band, RasterDataNode> sourceRasterMap;

@@ -206,11 +206,18 @@ public class BandMathsOp extends Operator {
         public String value;
     }
 
+
     @TargetProduct
     private Product targetProduct;
 
     @SourceProducts(description = "Any number of source products.")
     private Product[] sourceProducts;
+
+
+    @Parameter(description = "Output file is copy of source file with math band(s) added",
+            label = "Copy Source File", defaultValue = "false", notNull = false)
+    private boolean copySourceFile;
+
 
     @Parameter(alias = "targetBands", itemAlias = "targetBand",
                description = "List of descriptors defining the target bands.")
@@ -257,7 +264,15 @@ public class BandMathsOp extends Operator {
                 throw new OperatorException("Products must have the same raster dimension.");
             }
         }
-        targetProduct = new Product(sourceProducts[0].getName() + "BandMath", "BandMath", width, height);
+   //     targetProduct = new Product(sourceProducts[0].getName() + "BandMath", "BandMath", width, height);
+
+        if (copySourceFile) {
+            targetProduct = sourceProducts[0];
+        } else {
+            targetProduct = new Product(sourceProducts[0].getName() + "BandMath", "BandMath", width, height);
+        }
+
+
 
         descriptorMap = new HashMap<Band, BandDescriptor>(targetBandDescriptors.length);
         Namespace namespace = createNamespace();

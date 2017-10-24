@@ -97,7 +97,7 @@ public class StatisticsOp extends Operator {
     public static final String DEFAULT_PERCENTILES = "50,80,85,90,95,98";
     public static final int[] DEFAULT_PERCENTILES_INTS = new int[]{50,80,85,90,95,98};
 
-    public boolean calculateMedian = true;
+ //   public boolean calculateMedian = true;
 
 
     private static final double FILL_VALUE = -999.0;
@@ -153,6 +153,12 @@ public class StatisticsOp extends Operator {
     @Parameter(description = "The number of bins to use in the histogram statistics",
             defaultValue = "1000")
     int numBins;
+
+
+    @Parameter(description = "Calculate median (this statistics field is optional since it will likely increase processing time for large files",
+            defaultValue = "false")
+    boolean calculateMedian;
+    
 
     final Set<StatisticsOutputter> statisticsOutputters = new HashSet<StatisticsOutputter>();
 
