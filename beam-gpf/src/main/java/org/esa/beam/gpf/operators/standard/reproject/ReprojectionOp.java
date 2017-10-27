@@ -205,11 +205,11 @@ public class ReprojectionOp extends Operator {
     private boolean applyValidPixelExpression;
 
     @Parameter(description = "Copy source valid pixel expression(s) to the corresponding bands of the reprojected file",
-            defaultValue = "false")
+            defaultValue = "true")
     private boolean transferValidPixelExpression;
 
 
-    @Parameter(description = "Boolean expression of masks and/or bands to apply to determine whether a source pixel gets used",
+    @Parameter(description = "Logical expression of masks and/or bands to apply to determine whether a source pixel gets used",
             defaultValue = "")
     private String maskExpression;
 
@@ -436,6 +436,17 @@ public class ReprojectionOp extends Operator {
             sourceImage = createNoDataReplacedImage(sourceRaster, targetNoDataValue);
         }
 
+
+        if (transferValidPixelExpression && validPixelExpressionOriginal != null && validPixelExpressionOriginal.length() > 0) {
+            targetBand.setValidPixelExpression(validPixelExpressionOriginal);
+        }
+
+        if (validPixelExpressionSet) {
+            sourceRaster.setValidPixelExpression(validPixelExpressionOriginal);
+        }
+
+
+
         final Interpolation resampling = getResampling(targetBand);
         MultiLevelImage projectedImage = createProjectedImage(sourceGeoCoding, sourceImage, targetBand, resampling);
         if (mustReplaceNaN(sourceRaster, targetDataType, targetNoDataValue.doubleValue())) {
@@ -466,13 +477,6 @@ public class ReprojectionOp extends Operator {
         }
 
 
-        if (transferValidPixelExpression && validPixelExpressionOriginal != null && validPixelExpressionOriginal.length() > 0) {
-            targetBand.setValidPixelExpression(validPixelExpressionOriginal);
-        }
-
-        if (validPixelExpressionSet) {
-            sourceRaster.setValidPixelExpression(validPixelExpressionOriginal);
-        }
     }
 
     private MultiLevelImage createLog10ScaledImage(final MultiLevelImage projectedImage) {

@@ -104,6 +104,7 @@ class ReprojectionForm extends JTabbedPane {
 
     private JButton editExpressionButton;
     private JTextArea expressionArea;
+    private JTabbedPane t = this;
 
 
     ReprojectionForm(TargetProductSelector targetProductSelector, boolean orthorectify, AppContext appContext) {
@@ -564,16 +565,21 @@ class ReprojectionForm extends JTabbedPane {
         layout.setTableWeightX(1.0);
 
         final JPanel panel = new JPanel(layout);
-        panel.setBorder(BorderFactory.createTitledBorder("Custom Masking"));
+        panel.setBorder(BorderFactory.createTitledBorder("Mask Expression"));
 
 
-        editExpressionButton = new JButton("Edit Expression...");
-        final Window parentWindow = SwingUtilities.getWindowAncestor(panel);
+        editExpressionButton = new JButton("Edit ...");
+        editExpressionButton.setPreferredSize(editExpressionButton.getPreferredSize());
+        editExpressionButton.setMaximumSize(editExpressionButton.getPreferredSize());
+        editExpressionButton.setMinimumSize(editExpressionButton.getPreferredSize());
+        final Window parentWindow = SwingUtilities.getWindowAncestor(this);
         editExpressionButton.addActionListener(new EditExpressionActionListener(parentWindow));
-        panel.add(editExpressionButton);
         expressionArea = new JTextArea(3, 40);
         expressionArea.setLineWrap(true);
         panel.add(new JScrollPane(expressionArea));
+        panel.add(editExpressionButton);
+
+
 
         return panel;
     }
@@ -587,16 +593,17 @@ class ReprojectionForm extends JTabbedPane {
         layout.setTableWeightX(1.0);
 
         final JPanel panel = new JPanel(layout);
-       panel.setBorder(BorderFactory.createTitledBorder("Valid Pixel Expression"));
+        panel.setBorder(BorderFactory.createTitledBorder("Valid Pixel Expression"));
 
-        applyValidPixelExpressionCheckBox = new JCheckBox("Apply valid pixel expression(s) before reprojecting");
+        applyValidPixelExpressionCheckBox = new JCheckBox("Mask at source file");
         applyValidPixelExpressionCheckBox.setSelected(true);
         panel.add(applyValidPixelExpressionCheckBox);
 
 
-        transferValidPixelExpressionCheckBox = new JCheckBox("Transfer existing valid pixel expression(s) to output file");
+        transferValidPixelExpressionCheckBox = new JCheckBox("Transfer to output file");
         transferValidPixelExpressionCheckBox.setSelected(true);
         panel.add(transferValidPixelExpressionCheckBox);
+
 
         return panel;
     }
@@ -752,6 +759,8 @@ class ReprojectionForm extends JTabbedPane {
 
 
 
+
+
     private class EditExpressionActionListener implements ActionListener {
 
         private final Window parentWindow;
@@ -766,7 +775,7 @@ class ReprojectionForm extends JTabbedPane {
                     getSourceProduct(),
                     appContext.getPreferences());
             pep.setCode(expressionArea.getText());
-            final int i = pep.showModalDialog(parentWindow, "Expression Editor");
+            final int i = pep.showModalDialog(parentWindow, "Mask Expression Editor");
             if (i == ModalDialog.ID_OK) {
                 expressionArea.setText(pep.getCode());
             }
