@@ -12,10 +12,11 @@ import java.net.URI;
  * Created with IntelliJ IDEA.
  * User: knowles
  * Date: 3/31/16
- * Time: 2:19 PM
+ * Time: 1:16 PM
  * To change this template use File | Settings | File Templates.
  */
-public class ShowForumPage extends ExecCommand {
+public class WebHelpOtherBeamAction extends ExecCommand {
+
     @Override
     public void updateState(final CommandEvent event) {
         setEnabled(Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE));
@@ -33,7 +34,7 @@ public class ShowForumPage extends ExecCommand {
 
         try {
             final Desktop desktop = Desktop.getDesktop();
-            desktop.browse(URI.create("https://oceancolor.gsfc.nasa.gov/forum/oceancolor/forum_show.pl"));
+            desktop.browse(URI.create("https://www.brockmann-consult.de/cms/web/beam/"));
         } catch (IOException e) {
             // TODO - handle
         } catch (UnsupportedOperationException e) {

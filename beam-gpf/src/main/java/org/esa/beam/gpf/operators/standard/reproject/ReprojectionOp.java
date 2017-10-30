@@ -200,6 +200,20 @@ public class ReprojectionOp extends Operator {
                defaultValue = "false")
     private boolean addDeltaBands;
 
+    @Parameter(description = "Apply the valid pixel expression to determine whether a source pixel gets used",
+            defaultValue = "true")
+    private boolean applyValidPixelExpression;
+
+    @Parameter(description = "Copy source valid pixel expression(s) to the corresponding bands of the reprojected file",
+            defaultValue = "true")
+    private boolean transferValidPixelExpression;
+
+
+    @Parameter(description = "Logical expression of masks and/or bands to apply to determine whether a source pixel gets used",
+            defaultValue = "")
+    private String maskExpression;
+
+
     private ElevationModel elevationModel;
     private MultiLevelModel srcModel;
     private MultiLevelModel targetModel;
@@ -361,6 +375,39 @@ public class ReprojectionOp extends Operator {
     }
 
     private void reprojectSourceRaster(RasterDataNode sourceRaster) {
+
+        boolean validPixelExpressionSet = false;
+
+        String validPixelExpressionOriginal = sourceRaster.getValidPixelExpression();
+        String validPixelExpression = (applyValidPixelExpression) ? validPixelExpressionOriginal: "";
+
+        String bandDescriptionOriginal = sourceRaster.getDescription();
+        String bandDescription = bandDescriptionOriginal;
+
+        if (maskExpression != null && maskExpression.length() > 0) {
+            if (validPixelExpression != null && validPixelExpression.length() > 0) {
+                validPixelExpression = "(" + validPixelExpression + ") && " + maskExpression;
+            } else {
+                validPixelExpression = maskExpression;
+            }
+        }
+
+        if (validPixelExpression != null && validPixelExpression.length() > 0) {
+            if (validPixelExpression.equals(validPixelExpressionOriginal)) {
+                bandDescription = bandDescription + "\n[Reprojected with source validPixelExpression applied:\nexpression=" + validPixelExpressionOriginal +"]";
+            } else {
+                bandDescription = bandDescription + "\n[Reprojected with source masking criteria:\nexpression=" + validPixelExpression +"]";
+                sourceRaster.setValidPixelExpression(validPixelExpression);
+                validPixelExpressionSet = true;
+            }
+
+        } else {
+            bandDescription = bandDescription + " [Reprojected with no source masking criteria]";
+            sourceRaster.setValidPixelExpression("");
+            validPixelExpressionSet = true;
+        }
+
+
         final int targetDataType;
         MultiLevelImage sourceImage;
         if (sourceRaster.isScalingApplied()) {
@@ -375,14 +422,30 @@ public class ReprojectionOp extends Operator {
         targetBand.setLog10Scaled(sourceRaster.isLog10Scaled());
         targetBand.setNoDataValue(targetNoDataValue.doubleValue());
         targetBand.setNoDataValueUsed(true);
-        targetBand.setDescription(sourceRaster.getDescription());
+        targetBand.setDescription(bandDescription);
         targetBand.setUnit(sourceRaster.getUnit());
 
+
         final GeoCoding sourceGeoCoding = getSourceGeoCoding(sourceRaster);
+
         final String exp = sourceRaster.getValidMaskExpression();
+   //     final String exp = sourceRaster.getValidMaskExpression(applyValidPixelExpression, true);
+
+
         if (exp != null) {
             sourceImage = createNoDataReplacedImage(sourceRaster, targetNoDataValue);
         }
+
+
+        if (transferValidPixelExpression && validPixelExpressionOriginal != null && validPixelExpressionOriginal.length() > 0) {
+            targetBand.setValidPixelExpression(validPixelExpressionOriginal);
+        }
+
+        if (validPixelExpressionSet) {
+            sourceRaster.setValidPixelExpression(validPixelExpressionOriginal);
+        }
+
+
 
         final Interpolation resampling = getResampling(targetBand);
         MultiLevelImage projectedImage = createProjectedImage(sourceGeoCoding, sourceImage, targetBand, resampling);
@@ -412,6 +475,8 @@ public class ReprojectionOp extends Operator {
                 targetBand.setSampleCoding(destIndexCoding);
             }
         }
+
+
     }
 
     private MultiLevelImage createLog10ScaledImage(final MultiLevelImage projectedImage) {

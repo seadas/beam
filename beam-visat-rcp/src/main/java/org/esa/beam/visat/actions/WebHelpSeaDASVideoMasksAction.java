@@ -30,7 +30,7 @@ import java.net.URI;
  * @author Ralf Quast
  * @version $Revision$ $Date$
  */
-public class ShowHomePageAction extends ExecCommand {
+public class WebHelpSeaDASVideoMasksAction extends ExecCommand {
 
     @Override
     public void updateState(final CommandEvent event) {
@@ -49,7 +49,7 @@ public class ShowHomePageAction extends ExecCommand {
 
         try {
             final Desktop desktop = Desktop.getDesktop();
-            desktop.browse(URI.create(homePageUrl));
+            desktop.browse(URI.create("https://www.youtube.com/watch?v=kI6x3sDjFQQ"));
         } catch (IOException e) {
             // TODO - handle
         } catch (UnsupportedOperationException e) {
