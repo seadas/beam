@@ -182,6 +182,11 @@
             <artifactId>beam-bigtiff</artifactId>
             <type>test-jar</type>
         </dependency>
+        <dependency>
+            <groupId>org.esa.beam</groupId>
+            <artifactId>beam-landsat-reader</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
