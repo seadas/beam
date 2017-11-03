@@ -36,6 +36,7 @@
         <!--<geotools.version>2.7.4</geotools.version>-->
         <geotools.version>8.7</geotools.version>
         <jide.version>3.5.15</jide.version>
+        <jackson.version>2.9.2</jackson.version>
     </properties>
 
     <modules>
@@ -439,7 +440,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.2.2</version>
+                <version>${jackson.version}</version>
             </dependency>
 
             <!-- GeoTools Libraries ############################################# -->
