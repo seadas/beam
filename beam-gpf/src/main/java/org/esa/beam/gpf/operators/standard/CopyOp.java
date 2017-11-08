@@ -65,7 +65,7 @@ public class CopyOp extends Operator {
 
     public static class Spi extends OperatorSpi {
         public Spi() {
-            super(PassThroughOp.class);
+            super(CopyOp.class);
         }
     }
 }
