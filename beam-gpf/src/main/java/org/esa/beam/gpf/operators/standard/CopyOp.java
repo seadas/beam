@@ -22,9 +22,10 @@ import java.util.HashMap;
 
 @OperatorMetadata(alias = "Copy",
         description = "Creates target product which is an exact copy of the source product.",
-        internal = true)
+        internal = false)
 public class CopyOp extends Operator {
-    @SourceProduct
+
+    @SourceProduct(alias = "source", description = "The source product to create the copy from")
     private Product sourceProduct;
 
     @TargetProduct
@@ -35,7 +36,7 @@ public class CopyOp extends Operator {
 
     public CopyOp(Product sourceProduct) {
         this.sourceProduct = sourceProduct;
-        this.targetProduct = sourceProduct;
+       // this.targetProduct = sourceProduct;
     }
 
     @Override
@@ -58,9 +59,9 @@ public class CopyOp extends Operator {
         subsetParameters.put("width", sourceProduct.getSceneRasterWidth());
         subsetParameters.put("height", sourceProduct.getSceneRasterHeight());
 
-        HashMap<String, Product> projProducts = new HashMap<String, Product>();
-        projProducts.put("source", sourceProduct);
-        targetProduct = GPF.createProduct("Subset", subsetParameters, projProducts);
+        HashMap<String, Product> subsetProducts = new HashMap<String, Product>();
+        subsetProducts.put("source", sourceProduct);
+        this.targetProduct = GPF.createProduct("Subset", subsetParameters, subsetProducts);
     }
 
     public static class Spi extends OperatorSpi {
