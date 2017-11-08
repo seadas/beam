@@ -31,10 +31,7 @@ import org.esa.beam.framework.dataop.barithm.BandArithmetic;
 import org.esa.beam.framework.dataop.barithm.BandArithmetic.ProductPrefixProvider;
 import org.esa.beam.framework.dataop.barithm.RasterDataEvalEnv;
 import org.esa.beam.framework.dataop.barithm.RasterDataSymbol;
-import org.esa.beam.framework.gpf.Operator;
-import org.esa.beam.framework.gpf.OperatorException;
-import org.esa.beam.framework.gpf.OperatorSpi;
-import org.esa.beam.framework.gpf.Tile;
+import org.esa.beam.framework.gpf.*;
 import org.esa.beam.framework.gpf.annotations.OperatorMetadata;
 import org.esa.beam.framework.gpf.annotations.Parameter;
 import org.esa.beam.framework.gpf.annotations.SourceProducts;
@@ -247,6 +244,8 @@ public class BandMathsOp extends Operator {
         this.variables = variables;
     }
 
+
+
     @Override
     public void initialize() throws OperatorException {
         if (targetBandDescriptors == null || targetBandDescriptors.length == 0) {
@@ -267,7 +266,8 @@ public class BandMathsOp extends Operator {
    //     targetProduct = new Product(sourceProducts[0].getName() + "BandMath", "BandMath", width, height);
 
         if (copySourceFile) {
-            targetProduct = sourceProducts[0];
+           // targetProduct = sourceProducts[0];
+            copySourceToTarget();
         } else {
             targetProduct = new Product(sourceProducts[0].getName() + "BandMath", "BandMath", width, height);
         }
@@ -290,6 +290,19 @@ public class BandMathsOp extends Operator {
                 break;
             }
         }
+    }
+
+
+    private void copySourceToTarget() {
+        final HashMap<String, Object> subsetParameters = new HashMap<String, Object>();
+        subsetParameters.put("x", 0);
+        subsetParameters.put("y", 0);
+        subsetParameters.put("width", sourceProducts[0].getSceneRasterWidth());
+        subsetParameters.put("height", sourceProducts[0].getSceneRasterHeight());
+
+        HashMap<String, Product> projProducts = new HashMap<String, Product>();
+        projProducts.put("source", sourceProducts[0]);
+        targetProduct = GPF.createProduct("Subset", subsetParameters, projProducts);
     }
 
     @Override
