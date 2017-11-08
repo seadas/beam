@@ -292,18 +292,27 @@ public class BandMathsOp extends Operator {
         }
     }
 
-
     private void copySourceToTarget() {
-        final HashMap<String, Object> subsetParameters = new HashMap<String, Object>();
-        subsetParameters.put("x", 0);
-        subsetParameters.put("y", 0);
-        subsetParameters.put("width", sourceProducts[0].getSceneRasterWidth());
-        subsetParameters.put("height", sourceProducts[0].getSceneRasterHeight());
+        final HashMap<String, Object> copyOpParameters = new HashMap<String, Object>();
 
-        HashMap<String, Product> projProducts = new HashMap<String, Product>();
-        projProducts.put("source", sourceProducts[0]);
-        targetProduct = GPF.createProduct("Subset", subsetParameters, projProducts);
+
+        HashMap<String, Product> copyOpProducts = new HashMap<String, Product>();
+        copyOpProducts.put("source", sourceProducts[0]);
+        targetProduct = GPF.createProduct("Copy", copyOpParameters, copyOpProducts);
     }
+
+
+//    private void copySourceToTarget() {
+//        final HashMap<String, Object> subsetParameters = new HashMap<String, Object>();
+//        subsetParameters.put("x", 0);
+//        subsetParameters.put("y", 0);
+//        subsetParameters.put("width", sourceProducts[0].getSceneRasterWidth());
+//        subsetParameters.put("height", sourceProducts[0].getSceneRasterHeight());
+//
+//        HashMap<String, Product> projProducts = new HashMap<String, Product>();
+//        projProducts.put("source", sourceProducts[0]);
+//        targetProduct = GPF.createProduct("Subset", subsetParameters, projProducts);
+//    }
 
     @Override
     public void computeTile(Band band, Tile targetTile, ProgressMonitor pm) throws OperatorException {

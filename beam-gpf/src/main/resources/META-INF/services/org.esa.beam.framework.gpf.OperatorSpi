@@ -6,6 +6,7 @@ org.esa.beam.gpf.operators.standard.SubsetOp$Spi
 org.esa.beam.gpf.operators.standard.WriteRGBOp$Spi
 org.esa.beam.gpf.operators.standard.PassThroughOp$Spi
 org.esa.beam.gpf.operators.standard.BandMathsOp$Spi
+org.esa.beam.gpf.operators.standard.CopyOp$Spi
 org.esa.beam.gpf.operators.standard.reproject.ReprojectionOp$Spi
 org.esa.beam.gpf.operators.meris.N1PatcherOp$Spi
 org.esa.beam.gpf.operators.meris.L3ToL1Op$Spi
