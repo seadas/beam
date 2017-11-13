@@ -22,7 +22,7 @@ import java.util.HashMap;
 
 @OperatorMetadata(alias = "Copy",
         description = "Creates target product which is an exact copy of the source product.",
-        internal = false)
+        internal = true)
 public class CopyOp extends Operator {
 
     @SourceProduct(alias = "source", description = "The source product to create the copy from")
