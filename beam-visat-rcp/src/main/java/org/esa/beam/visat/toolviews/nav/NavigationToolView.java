@@ -20,6 +20,7 @@ import com.bc.ceres.glayer.swing.LayerCanvas;
 import com.bc.ceres.glayer.swing.LayerCanvasModel;
 import com.bc.ceres.grender.AdjustableView;
 import com.bc.ceres.grender.Viewport;
+import com.bc.ceres.swing.TableLayout;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
@@ -221,12 +222,81 @@ public class NavigationToolView extends AbstractToolView {
         gbc.gridy++;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.VERTICAL;
-        eastPane.add(new JLabel(" "), gbc); // filler
+        eastPane.add(new JPanel(), gbc); // filler
         gbc.fill = GridBagConstraints.NONE;
         gbc.weighty = 0.0;
 
         gbc.gridy++;
-//        eastPane.add(helpButton, gbc);
+
+
+        zoomSlider = new JSlider(JSlider.HORIZONTAL);
+        zoomSlider.setValue(0);
+        zoomSlider.setMinimum(MIN_SLIDER_VALUE);
+        zoomSlider.setMaximum(MAX_SLIDER_VALUE);
+        zoomSlider.setPaintTicks(false);
+        zoomSlider.setPaintLabels(false);
+        zoomSlider.setSnapToTicks(false);
+        zoomSlider.setPaintTrack(true);
+        zoomSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                if (!inUpdateMode) {
+                    zoom(sliderValueToZoomFactor(zoomSlider.getValue()));
+                }
+            }
+        });
+
+
+        eastPane.setMinimumSize(eastPane.getPreferredSize());
+
+        final JPanel zoomSliderPane = new JPanel(new BorderLayout(2, 2));
+        zoomSliderPane.add(zoomSlider, BorderLayout.CENTER);
+        zoomSliderPane.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
+
+
+        final JPanel sliderPane = new JPanel(new BorderLayout(2, 2));
+        sliderPane.add(zoomSliderPane, BorderLayout.CENTER);
+        sliderPane.add(getFactorRotatePane(), BorderLayout.SOUTH);
+
+        canvas = createNavigationCanvas();
+        canvas.setBackground(new Color(138, 133, 128)); // image background
+        canvas.setForeground(new Color(153, 153, 204)); // slider overlay
+
+        final JPanel centerPane = new JPanel(new BorderLayout(4, 4));
+        centerPane.add(canvas, BorderLayout.CENTER);
+        centerPane.add(eastPane, BorderLayout.EAST);
+
+
+
+        final JPanel mainPane = new JPanel(new BorderLayout(0, 4));
+        mainPane.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        mainPane.add(centerPane, BorderLayout.CENTER);
+        mainPane.add(sliderPane, BorderLayout.SOUTH);
+
+        if (getDescriptor().getHelpId() != null) {
+            HelpSys.enableHelpOnButton(helpButton, getDescriptor().getHelpId());
+            HelpSys.enableHelpKey(mainPane, getDescriptor().getHelpId());
+        }
+
+        setCurrentView(VisatApp.getApp().getSelectedProductSceneView());
+
+        updateState();
+
+        // Add an internal frame listener to VISAT so that we can update our
+        // navigation window with the information of the currently activated
+        // product scene view.
+        //
+        VisatApp.getApp().addInternalFrameListener(new NavigationIFL());
+
+        return mainPane;
+    }
+
+
+
+
+    public JPanel getFactorRotatePane() {
+
+        final DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols(Locale.ENGLISH);
 
         zoomFactorField = new JTextField();
         zoomFactorField.setColumns(8);
@@ -246,6 +316,7 @@ public class NavigationToolView extends AbstractToolView {
 
         rotationAngleSpinner = new JSpinner(new SpinnerNumberModel(0.0, -1800.0, 1800.0, 5.0));
         final JSpinner.NumberEditor editor = (JSpinner.NumberEditor) rotationAngleSpinner.getEditor();
+
         rotationAngleField = editor.getTextField();
         final DecimalFormat rotationFormat;
         rotationFormat = new DecimalFormat("#####.##°", decimalFormatSymbols);
@@ -257,9 +328,11 @@ public class NavigationToolView extends AbstractToolView {
                 return new NumberFormatter(rotationFormat);
             }
         });
-        rotationAngleField.setColumns(6);
+        rotationAngleField.setColumns(4);
         rotationAngleField.setEditable(true);
         rotationAngleField.setHorizontalAlignment(JTextField.CENTER);
+
+
         rotationAngleField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -280,22 +353,17 @@ public class NavigationToolView extends AbstractToolView {
             }
         });
 
-        zoomSlider = new JSlider(JSlider.HORIZONTAL);
-        zoomSlider.setValue(0);
-        zoomSlider.setMinimum(MIN_SLIDER_VALUE);
-        zoomSlider.setMaximum(MAX_SLIDER_VALUE);
-        zoomSlider.setPaintTicks(false);
-        zoomSlider.setPaintLabels(false);
-        zoomSlider.setSnapToTicks(false);
-        zoomSlider.setPaintTrack(true);
-        zoomSlider.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(final ChangeEvent e) {
-                if (!inUpdateMode) {
-                    zoom(sliderValueToZoomFactor(zoomSlider.getValue()));
-                }
-            }
-        });
+
+        zoomFactorField.setMinimumSize(zoomFactorField.getPreferredSize());
+        zoomFactorField.setMaximumSize(zoomFactorField.getPreferredSize());
+
+        rotationAngleField.setMinimumSize(rotationAngleField.getPreferredSize());
+        rotationAngleField.setPreferredSize(rotationAngleField.getPreferredSize());
+        rotationAngleField.setMaximumSize(rotationAngleField.getPreferredSize());
+        rotationAngleSpinner.setMinimumSize(rotationAngleSpinner.getPreferredSize());
+        rotationAngleSpinner.setPreferredSize(rotationAngleSpinner.getPreferredSize());
+        rotationAngleSpinner.setMaximumSize(rotationAngleSpinner.getPreferredSize());
+
 
         final JPanel zoomFactorPane = new JPanel(new BorderLayout());
         zoomFactorPane.add(zoomFactorField, BorderLayout.WEST);
@@ -305,44 +373,14 @@ public class NavigationToolView extends AbstractToolView {
         rotationAnglePane.add(new JLabel(" "), BorderLayout.CENTER);
 
 
-        final JPanel sliderPane = new JPanel(new BorderLayout(2, 2));
-        sliderPane.add(zoomFactorPane, BorderLayout.WEST);
-        sliderPane.add(zoomSlider, BorderLayout.CENTER);
-        sliderPane.add(rotationAnglePane, BorderLayout.EAST);
+        final JPanel pane = new JPanel(new BorderLayout(0, 0));
+        pane.add(zoomFactorPane, BorderLayout.WEST);
+        pane.add(rotationAnglePane, BorderLayout.EAST);
 
-        canvas = createNavigationCanvas();
-        canvas.setBackground(new Color(138, 133, 128)); // image background
-        canvas.setForeground(new Color(153, 153, 204)); // slider overlay
-
-        final JPanel centerPane = new JPanel(new BorderLayout(4, 4));
-        centerPane.add(BorderLayout.CENTER, canvas);
-        centerPane.add(BorderLayout.SOUTH, sliderPane);
-
-        final JPanel mainPane = new JPanel(new BorderLayout(8, 8));
-        mainPane.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        mainPane.add(centerPane, BorderLayout.CENTER);
-        mainPane.add(eastPane, BorderLayout.EAST);
-
-        mainPane.setMinimumSize(new Dimension(50, 180));
-   //     mainPane.setPreferredSize(new Dimension(250, 180));
-
-        if (getDescriptor().getHelpId() != null) {
-            HelpSys.enableHelpOnButton(helpButton, getDescriptor().getHelpId());
-            HelpSys.enableHelpKey(mainPane, getDescriptor().getHelpId());
-        }
-
-        setCurrentView(VisatApp.getApp().getSelectedProductSceneView());
-
-        updateState();
-
-        // Add an internal frame listener to VISAT so that we can update our
-        // navigation window with the information of the currently activated
-        // product scene view.
-        //
-        VisatApp.getApp().addInternalFrameListener(new NavigationIFL());
-
-        return mainPane;
+        return pane;
     }
+
+
 
     public ProductSceneView getCurrentView() {
         return currentView;
@@ -368,7 +406,6 @@ public class NavigationToolView extends AbstractToolView {
             updateState();
         }
     }
-
 
     NavigationCanvas createNavigationCanvas() {
         return new NavigationCanvas(this);
@@ -460,6 +497,8 @@ public class NavigationToolView extends AbstractToolView {
         }
     }
 
+
+
     public void zoom(final double zoomFactor) {
         final ProductSceneView view = getCurrentView();
         if (view != null && zoomFactor > 0) {
@@ -483,6 +522,10 @@ public class NavigationToolView extends AbstractToolView {
             maybeSynchronizeCompatibleProductViews();
         }
     }
+
+
+
+
 
     private void maybeSynchronizeCompatibleProductViews() {
         if (syncViewsButton.isSelected()) {
