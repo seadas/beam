@@ -106,6 +106,9 @@ public class NavigationToolView extends AbstractToolView {
     private boolean inUpdateMode;
     private DecimalFormat scaleFormat;
 
+    private boolean fillToggle = true;  // enables zoom all to behave as a toggle between fit window and zoomed out
+    private double ZOOM_OUT_PERCENT_DEFAULT = 16.0;
+
     private boolean debug;
 
     private Color zeroRotationAngleBackground;
@@ -167,6 +170,9 @@ public class NavigationToolView extends AbstractToolView {
                 zoomAll();
             }
         });
+
+
+
 
 //        syncViewsButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/SyncViews24.png"), true);
         syncViewsButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Chain24.png"), true);
@@ -495,6 +501,8 @@ public class NavigationToolView extends AbstractToolView {
             layerCanvas.getViewport().setZoomFactor(layerCanvas.getDefaultZoomFactor());
             maybeSynchronizeCompatibleProductViews();
         }
+        fillToggle = true;
+
     }
 
 
@@ -505,6 +513,7 @@ public class NavigationToolView extends AbstractToolView {
             view.getLayerCanvas().getViewport().setZoomFactor(zoomFactor);
             maybeSynchronizeCompatibleProductViews();
         }
+        fillToggle = true;
     }
 
     private void rotate(Double rotationAngle) {
@@ -518,11 +527,36 @@ public class NavigationToolView extends AbstractToolView {
     public void zoomAll() {
         final ProductSceneView view = getCurrentView();
         if (view != null) {
-            view.getLayerCanvas().zoomAll();
+            if (fillToggle) {
+                view.getLayerCanvas().zoomAll();
+            } else {
+                zoomAllOut(ZOOM_OUT_PERCENT_DEFAULT);
+            }
+            fillToggle = !fillToggle;
+
             maybeSynchronizeCompatibleProductViews();
         }
     }
 
+
+    public void zoomAllOut(double percentOut) {
+        final ProductSceneView view = getCurrentView();
+        if (view != null) {
+            Rectangle2D maxVisibleModelBounds = view.getLayerCanvas().getMaxVisibleModelBounds();
+
+            double diffX = maxVisibleModelBounds.getMaxX() - maxVisibleModelBounds.getMinX();
+            double diffY = maxVisibleModelBounds.getMaxY() - maxVisibleModelBounds.getMinY();
+            double newX = maxVisibleModelBounds.getMinX() - 0.5*percentOut/100 * diffX;
+            double newY = maxVisibleModelBounds.getMinY() - 0.5*percentOut/100 * diffY;
+            double newWidth = maxVisibleModelBounds.getWidth() + percentOut/100 * diffX;
+            double newHeight = maxVisibleModelBounds.getHeight() + percentOut/100 * diffY;
+
+            Rectangle2D rect = new Rectangle2D.Double(newX, newY, newWidth, newHeight);
+            view.getLayerCanvas().getViewport().zoom(rect);
+
+            maybeSynchronizeCompatibleProductViews();
+        }
+    }
 
 
 
