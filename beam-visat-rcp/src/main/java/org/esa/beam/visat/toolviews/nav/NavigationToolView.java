@@ -132,7 +132,7 @@ public class NavigationToolView extends AbstractToolView {
         scaleFormat.setDecimalSeparatorAlwaysShown(false);
 
         zoomInButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/ZoomIn24.gif"), false);
-        zoomInButton.setToolTipText("Zoom in."); /*I18N*/
+        zoomInButton.setToolTipText("Zoom in"); /*I18N*/
         zoomInButton.setName("zoomInButton");
         zoomInButton.addActionListener(new ActionListener() {
             @Override
@@ -143,7 +143,7 @@ public class NavigationToolView extends AbstractToolView {
 
         zoomOutButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/ZoomOut24.gif"), false);
         zoomOutButton.setName("zoomOutButton");
-        zoomOutButton.setToolTipText("Zoom out."); /*I18N*/
+        zoomOutButton.setToolTipText("Zoom out"); /*I18N*/
         zoomOutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
@@ -152,7 +152,7 @@ public class NavigationToolView extends AbstractToolView {
         });
 
         zoomDefaultButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/ZoomPixel24.gif"), false);
-        zoomDefaultButton.setToolTipText("Actual Pixels (image pixel = view pixel)."); /*I18N*/
+        zoomDefaultButton.setToolTipText("Display image data at exact resolution of monitor screen"); /*I18N*/
         zoomDefaultButton.setName("zoomDefaultButton");
         zoomDefaultButton.addActionListener(new ActionListener() {
             @Override
@@ -163,7 +163,7 @@ public class NavigationToolView extends AbstractToolView {
 
         zoomAllButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/ZoomAll24.gif"), false);
         zoomAllButton.setName("zoomAllButton");
-        zoomAllButton.setToolTipText("Zoom all."); /*I18N*/
+        zoomAllButton.setToolTipText("Zoom all (behaves as a toggle between exact screen fit and zoomed out fit"); /*I18N*/
         zoomAllButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
@@ -176,7 +176,7 @@ public class NavigationToolView extends AbstractToolView {
 
 //        syncViewsButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/SyncViews24.png"), true);
         syncViewsButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Chain24.png"), true);
-        syncViewsButton.setToolTipText("Synchronise compatible product views."); /*I18N*/
+        syncViewsButton.setToolTipText("Synchronise window views of compatible bands/products."); /*I18N*/
         syncViewsButton.setName("syncViewsButton");
         syncViewsButton.addActionListener(new ActionListener() {
             @Override
@@ -186,7 +186,7 @@ public class NavigationToolView extends AbstractToolView {
         });
 
         syncCursorButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/SyncCursor24.png"), true);
-        syncCursorButton.setToolTipText("Synchronise cursor position."); /*I18N*/
+        syncCursorButton.setToolTipText("Display a synchronised cursor in each window"); /*I18N*/
         syncCursorButton.setName("syncCursorButton");
         syncCursorButton.addActionListener(new ActionListener() {
             @Override
