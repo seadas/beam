@@ -13,6 +13,24 @@
 * You should have received a copy of the GNU General Public License along
 * with this program; if not, see http://www.gnu.org/licenses/
 */
+
+/*
+ * Creates a color bar and either saves it as a file or adds it as a layer
+ */
+
+/* NASA SeaDAS CODE Revisions
+ * Revised by Daniel Knowles for SeaDAS 7.x
+ * related code revisions:
+ * beam/beam-ui/src/main/java/org/esa/beam/framework/ui/product/ColorBarParamInfo.java
+ * beam/beam-ui/src/main/java/org/esa/beam/framework/ui/product/ProductSceneView.java
+ * beam/beam-core/src/main/java/org/esa/beam/framework/datamodel/ImageLegend.java
+ * beam/beam-visat-rcp/src/main/java/org/esa/beam/visat/actions/ShowColorBarOverlayAction.java
+ * beam/beam-visat-rcp/src/main/java/org/esa/beam/visat/VisatPreferencesDialog.java
+ * beam/beam-core/src/main/java/org/esa/beam/framework/datamodel/ImageInfo.java
+ * beam/beam-core/src/main/java/org/esa/beam/framework/datamodel/ColorPaletteSourcesInfo.java   (used also by Color Schemes so related files discussed there)
+ */
+
+
 package org.esa.beam.visat.actions;
 
 import org.esa.beam.framework.datamodel.ImageInfo;
@@ -43,6 +61,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+
 
 public class ExportLegendImageAction extends AbstractExportImageAction {
 
