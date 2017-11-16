@@ -13,6 +13,16 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, see http://www.gnu.org/licenses/
  */
+
+// SeaDAS revised code
+// Revised by Daniel Knowles (as of SeaDAS 7.5 and/or earlier revisions)
+// Revisions includes:
+//      - Tooltips and other wording
+//      - GUI component alignment and arrangement
+//      - Zoom all button now behaves as a toggle between zoom all and zoomed out (116% of image) as a convenience for
+//          viewing map gridlines which are outside of image
+
+
 package org.esa.beam.visat.toolviews.nav;
 
 import com.bc.ceres.glayer.Layer;
@@ -20,7 +30,6 @@ import com.bc.ceres.glayer.swing.LayerCanvas;
 import com.bc.ceres.glayer.swing.LayerCanvasModel;
 import com.bc.ceres.grender.AdjustableView;
 import com.bc.ceres.grender.Viewport;
-import com.bc.ceres.swing.TableLayout;
 import org.esa.beam.framework.datamodel.Product;
 import org.esa.beam.framework.datamodel.ProductNode;
 import org.esa.beam.framework.datamodel.ProductNodeEvent;
@@ -57,7 +66,6 @@ import javax.swing.text.NumberFormatter;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -107,7 +115,7 @@ public class NavigationToolView extends AbstractToolView {
     private DecimalFormat scaleFormat;
 
     private boolean fillToggle = true;  // enables zoom all to behave as a toggle between fit window and zoomed out
-    private double ZOOM_OUT_PERCENT_DEFAULT = 16.0;
+    private double ZOOM_IMAGE_PERCENT = 116.0;
 
     private boolean debug;
 
@@ -163,7 +171,7 @@ public class NavigationToolView extends AbstractToolView {
 
         zoomAllButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/ZoomAll24.gif"), false);
         zoomAllButton.setName("zoomAllButton");
-        zoomAllButton.setToolTipText("Zoom all (behaves as a toggle between exact screen fit and zoomed out fit"); /*I18N*/
+        zoomAllButton.setToolTipText("Zoom all (behaves as a toggle between exact screen fit and zoomed out fit)"); /*I18N*/
         zoomAllButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
@@ -172,11 +180,9 @@ public class NavigationToolView extends AbstractToolView {
         });
 
 
-
-
 //        syncViewsButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/SyncViews24.png"), true);
         syncViewsButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Chain24.png"), true);
-        syncViewsButton.setToolTipText("Synchronise window views of compatible bands/products."); /*I18N*/
+        syncViewsButton.setToolTipText("Synchronise window views of compatible bands/products"); /*I18N*/
         syncViewsButton.setName("syncViewsButton");
         syncViewsButton.addActionListener(new ActionListener() {
             @Override
@@ -195,114 +201,7 @@ public class NavigationToolView extends AbstractToolView {
             }
         });
 
-        AbstractButton helpButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Help22.png"), false);
-        helpButton.setToolTipText("Help."); /*I18N*/
-        helpButton.setName("helpButton");
 
-
-        final JPanel eastPane = GridBagUtils.createPanel();
-        final GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.NORTHWEST;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weightx = 0.0;
-        gbc.weighty = 0.0;
-
-        gbc.gridy = 0;
-        eastPane.add(zoomInButton, gbc);
-
-        gbc.gridy++;
-        eastPane.add(zoomOutButton, gbc);
-
-        gbc.gridy++;
-        eastPane.add(zoomDefaultButton, gbc);
-
-        gbc.gridy++;
-        eastPane.add(zoomAllButton, gbc);
-
-        gbc.gridy++;
-        eastPane.add(syncViewsButton, gbc);
-
-        gbc.gridy++;
-        eastPane.add(syncCursorButton, gbc);
-
-        gbc.gridy++;
-        gbc.weighty = 1.0;
-        gbc.fill = GridBagConstraints.VERTICAL;
-        eastPane.add(new JPanel(), gbc); // filler
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.weighty = 0.0;
-
-        gbc.gridy++;
-
-
-        zoomSlider = new JSlider(JSlider.HORIZONTAL);
-        zoomSlider.setValue(0);
-        zoomSlider.setMinimum(MIN_SLIDER_VALUE);
-        zoomSlider.setMaximum(MAX_SLIDER_VALUE);
-        zoomSlider.setPaintTicks(false);
-        zoomSlider.setPaintLabels(false);
-        zoomSlider.setSnapToTicks(false);
-        zoomSlider.setPaintTrack(true);
-        zoomSlider.addChangeListener(new ChangeListener() {
-            @Override
-            public void stateChanged(final ChangeEvent e) {
-                if (!inUpdateMode) {
-                    zoom(sliderValueToZoomFactor(zoomSlider.getValue()));
-                }
-            }
-        });
-
-
-        eastPane.setMinimumSize(eastPane.getPreferredSize());
-
-        final JPanel zoomSliderPane = new JPanel(new BorderLayout(2, 2));
-        zoomSliderPane.add(zoomSlider, BorderLayout.CENTER);
-        zoomSliderPane.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4));
-
-
-        final JPanel sliderPane = new JPanel(new BorderLayout(2, 2));
-        sliderPane.add(zoomSliderPane, BorderLayout.CENTER);
-        sliderPane.add(getFactorRotatePane(), BorderLayout.SOUTH);
-
-        canvas = createNavigationCanvas();
-        canvas.setBackground(new Color(138, 133, 128)); // image background
-        canvas.setForeground(new Color(153, 153, 204)); // slider overlay
-
-        final JPanel centerPane = new JPanel(new BorderLayout(4, 4));
-        centerPane.add(canvas, BorderLayout.CENTER);
-        centerPane.add(eastPane, BorderLayout.EAST);
-
-
-
-        final JPanel mainPane = new JPanel(new BorderLayout(0, 4));
-        mainPane.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-        mainPane.add(centerPane, BorderLayout.CENTER);
-        mainPane.add(sliderPane, BorderLayout.SOUTH);
-
-        if (getDescriptor().getHelpId() != null) {
-            HelpSys.enableHelpOnButton(helpButton, getDescriptor().getHelpId());
-            HelpSys.enableHelpKey(mainPane, getDescriptor().getHelpId());
-        }
-
-        setCurrentView(VisatApp.getApp().getSelectedProductSceneView());
-
-        updateState();
-
-        // Add an internal frame listener to VISAT so that we can update our
-        // navigation window with the information of the currently activated
-        // product scene view.
-        //
-        VisatApp.getApp().addInternalFrameListener(new NavigationIFL());
-
-        return mainPane;
-    }
-
-
-
-
-    public JPanel getFactorRotatePane() {
-
-        final DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols(Locale.ENGLISH);
 
         zoomFactorField = new JTextField();
         zoomFactorField.setColumns(8);
@@ -371,6 +270,115 @@ public class NavigationToolView extends AbstractToolView {
         rotationAngleSpinner.setMaximumSize(rotationAngleSpinner.getPreferredSize());
 
 
+
+        zoomSlider = new JSlider(JSlider.HORIZONTAL);
+        zoomSlider.setValue(0);
+        zoomSlider.setMinimum(MIN_SLIDER_VALUE);
+        zoomSlider.setMaximum(MAX_SLIDER_VALUE);
+        zoomSlider.setPaintTicks(false);
+        zoomSlider.setPaintLabels(false);
+        zoomSlider.setSnapToTicks(false);
+        zoomSlider.setPaintTrack(true);
+        zoomSlider.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(final ChangeEvent e) {
+                if (!inUpdateMode) {
+                    zoom(sliderValueToZoomFactor(zoomSlider.getValue()));
+                }
+            }
+        });
+
+
+        canvas = createNavigationCanvas();
+        canvas.setBackground(new Color(138, 133, 128)); // image background
+        canvas.setForeground(new Color(153, 153, 204)); // slider overlay
+
+
+
+        final JPanel mainPane = getMainPane();
+
+
+        AbstractButton helpButton = ToolButtonFactory.createButton(UIUtils.loadImageIcon("icons/Help22.png"), false);
+        helpButton.setToolTipText("Help"); /*I18N*/
+        helpButton.setName("helpButton");
+
+        if (getDescriptor().getHelpId() != null) {
+            HelpSys.enableHelpOnButton(helpButton, getDescriptor().getHelpId());
+            HelpSys.enableHelpKey(mainPane, getDescriptor().getHelpId());
+        }
+
+        setCurrentView(VisatApp.getApp().getSelectedProductSceneView());
+
+        updateState();
+
+        // Add an internal frame listener to VISAT so that we can update our
+        // navigation window with the information of the currently activated
+        // product scene view.
+        //
+        VisatApp.getApp().addInternalFrameListener(new NavigationIFL());
+
+        return mainPane;
+    }
+
+
+
+
+
+    public JPanel getMainPane() {
+        final JPanel centerAndEastPane = new JPanel(new BorderLayout(4, 4));
+        centerAndEastPane.add(canvas, BorderLayout.CENTER);
+        centerAndEastPane.add(getEastPane(), BorderLayout.EAST);
+
+        final JPanel mainPane = new JPanel(new BorderLayout(0, 0));
+        mainPane.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        mainPane.add(centerAndEastPane, BorderLayout.CENTER);
+        mainPane.add(getSouthPane(), BorderLayout.SOUTH);
+
+        return mainPane;
+    }
+
+
+
+    public JPanel getEastPane() {
+        final JPanel eastPane = GridBagUtils.createPanel();
+        final GridBagConstraints gbc = new GridBagConstraints();
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weightx = 0.0;
+        gbc.weighty = 0.0;
+
+        gbc.gridy = 0;
+        eastPane.add(zoomInButton, gbc);
+
+        gbc.gridy++;
+        eastPane.add(zoomOutButton, gbc);
+
+        gbc.gridy++;
+        eastPane.add(zoomDefaultButton, gbc);
+
+        gbc.gridy++;
+        eastPane.add(zoomAllButton, gbc);
+
+        gbc.gridy++;
+        eastPane.add(syncViewsButton, gbc);
+
+        gbc.gridy++;
+        eastPane.add(syncCursorButton, gbc);
+
+        gbc.gridy++;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.VERTICAL;
+        eastPane.add(new JPanel(), gbc); // filler
+
+        eastPane.setMinimumSize(eastPane.getPreferredSize());
+
+        return eastPane;
+    }
+
+
+
+    public JPanel getSouthPane() {
+
         final JPanel zoomFactorPane = new JPanel(new BorderLayout());
         zoomFactorPane.add(zoomFactorField, BorderLayout.WEST);
 
@@ -378,12 +386,21 @@ public class NavigationToolView extends AbstractToolView {
         rotationAnglePane.add(rotationAngleSpinner, BorderLayout.EAST);
         rotationAnglePane.add(new JLabel(" "), BorderLayout.CENTER);
 
+        final JPanel southLowerPane = new JPanel(new BorderLayout(0, 0));
+        southLowerPane.add(zoomFactorPane, BorderLayout.WEST);
+        southLowerPane.add(rotationAnglePane, BorderLayout.EAST);
 
-        final JPanel pane = new JPanel(new BorderLayout(0, 0));
-        pane.add(zoomFactorPane, BorderLayout.WEST);
-        pane.add(rotationAnglePane, BorderLayout.EAST);
 
-        return pane;
+
+        final JPanel southUpperPane = new JPanel(new BorderLayout(2, 2));
+        southUpperPane.add(zoomSlider, BorderLayout.CENTER);
+        southUpperPane.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
+
+        final JPanel southPane = new JPanel(new BorderLayout(0, 0));
+        southPane.add(southUpperPane, BorderLayout.CENTER);
+        southPane.add(southLowerPane, BorderLayout.SOUTH);
+
+        return southPane;
     }
 
 
@@ -530,7 +547,7 @@ public class NavigationToolView extends AbstractToolView {
             if (fillToggle) {
                 view.getLayerCanvas().zoomAll();
             } else {
-                zoomAllOut(ZOOM_OUT_PERCENT_DEFAULT);
+                zoomImagePercent(ZOOM_IMAGE_PERCENT);
             }
             fillToggle = !fillToggle;
 
@@ -539,17 +556,22 @@ public class NavigationToolView extends AbstractToolView {
     }
 
 
-    public void zoomAllOut(double percentOut) {
+
+
+    public void zoomImagePercent(double zoomImagePercent) {
+
         final ProductSceneView view = getCurrentView();
         if (view != null) {
             Rectangle2D maxVisibleModelBounds = view.getLayerCanvas().getMaxVisibleModelBounds();
 
             double diffX = maxVisibleModelBounds.getMaxX() - maxVisibleModelBounds.getMinX();
             double diffY = maxVisibleModelBounds.getMaxY() - maxVisibleModelBounds.getMinY();
-            double newX = maxVisibleModelBounds.getMinX() - 0.5*percentOut/100 * diffX;
-            double newY = maxVisibleModelBounds.getMinY() - 0.5*percentOut/100 * diffY;
-            double newWidth = maxVisibleModelBounds.getWidth() + percentOut/100 * diffX;
-            double newHeight = maxVisibleModelBounds.getHeight() + percentOut/100 * diffY;
+
+            double newX = maxVisibleModelBounds.getMinX() - 0.5*(zoomImagePercent - 100)/100.0 * diffX;
+            double newY = maxVisibleModelBounds.getMinY() - 0.5*(zoomImagePercent - 100)/100.0 * diffY;
+            double newWidth = maxVisibleModelBounds.getWidth() * zoomImagePercent;
+            double newHeight = maxVisibleModelBounds.getHeight() * zoomImagePercent;
+
 
             Rectangle2D rect = new Rectangle2D.Double(newX, newY, newWidth, newHeight);
             view.getLayerCanvas().getViewport().zoom(rect);
