@@ -14,9 +14,9 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
-// SeaDAS revised code
+// SeaDAS Revision Summary
 // Revised by Daniel Knowles (as of SeaDAS 7.5 and/or earlier revisions)
-// Revisions includes:
+// Revisions include:
 //      - Tooltips and other wording
 //      - GUI component alignment and arrangement
 //      - Zoom all button now behaves as a toggle between zoom all and zoomed out (116% of image) as a convenience for

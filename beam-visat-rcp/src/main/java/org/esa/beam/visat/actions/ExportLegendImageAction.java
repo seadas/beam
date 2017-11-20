@@ -20,12 +20,14 @@
 
 /* NASA SeaDAS CODE Revisions
  * Revised by Daniel Knowles for SeaDAS 7.x
- * related code revisions:
+ *
+ * Color Bar code revisions:
  * beam/beam-ui/src/main/java/org/esa/beam/framework/ui/product/ColorBarParamInfo.java
  * beam/beam-ui/src/main/java/org/esa/beam/framework/ui/product/ProductSceneView.java
- * beam/beam-core/src/main/java/org/esa/beam/framework/datamodel/ImageLegend.java
+ * beam/beam-visat-rcp/src/main/java/org/esa/beam/visat/actions/ExportLegendImageAction.java
  * beam/beam-visat-rcp/src/main/java/org/esa/beam/visat/actions/ShowColorBarOverlayAction.java
  * beam/beam-visat-rcp/src/main/java/org/esa/beam/visat/VisatPreferencesDialog.java
+ * beam/beam-core/src/main/java/org/esa/beam/framework/datamodel/ImageLegend.java
  * beam/beam-core/src/main/java/org/esa/beam/framework/datamodel/ImageInfo.java
  * beam/beam-core/src/main/java/org/esa/beam/framework/datamodel/ColorPaletteSourcesInfo.java   (used also by Color Schemes so related files discussed there)
  */

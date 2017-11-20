@@ -67,6 +67,13 @@ import java.util.List;
  * @author Norman Fomferra
  * @version $ Revision: $ $ Date: $
  */
+
+/* NASA SeaDAS CODE Revisions
+ * Created by Daniel Knowles for SeaDAS 7.x
+ * Stores colorBarParamInfo for color bars created by the Color Bar GUI
+ */
+
+
 public class ProductSceneView extends BasicView
         implements FigureEditorAware, ProductNodeView, PropertyMapChangeListener, PixelInfoFactory, ProductLayerContext,
         ViewportAware {

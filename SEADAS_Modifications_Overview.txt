@@ -1,0 +1,113 @@
+
+This is an attempt at identifying some of the key code modifications to the beam core code within SeaDAS.
+
+
+
+
+Color Bar
+beam/beam-ui/src/main/java/org/esa/beam/framework/ui/product/ColorBarParamInfo.java
+beam/beam-ui/src/main/java/org/esa/beam/framework/ui/product/ProductSceneView.java
+beam/beam-visat-rcp/src/main/java/org/esa/beam/visat/actions/ExportLegendImageAction.java
+beam/beam-visat-rcp/src/main/java/org/esa/beam/visat/actions/ShowColorBarOverlayAction.java
+beam/beam-visat-rcp/src/main/java/org/esa/beam/visat/VisatPreferencesDialog.java
+beam/beam-core/src/main/java/org/esa/beam/framework/datamodel/ImageLegend.java
+beam/beam-core/src/main/java/org/esa/beam/framework/datamodel/ImageInfo.java
+beam/beam-core/src/main/java/org/esa/beam/framework/datamodel/ColorPaletteSourcesInfo.java   (used also by Color Schemes so related files discussed there)
+beam/beam-core/src/main/java/org/esa/beam/framework/datamodel/ColorBarInfo.java
+beam/beam-core/src/main/java/org/esa/beam/glayer/ColorBarLayerType.java
+beam/beam-core/src/main/java/org/esa/beam/jai/ImageManager.java
+beam/beam-core/src/main/resources/META-INF/services/com.bc.ceres.glayer.LayerType
+beam/beam-visat-rcp/src/main/java/org/esa/beam/visat/actions/session/Session.java
+
+Color Palette:
+beam/beam-core/src/main/java/org/esa/beam/framework/datamodel/ColorPaletteSchemes.java
+beam/beam-visat-rcp/src/main/java/org/esa/beam/visat/toolviews/imageinfo/ColorManipulationToolView.java
+beam/beam-visat-rcp/src/main/java/org/esa/beam/visat/toolviews/imageinfo/Continuous1BandBasicForm.java
+beam/beam-core/src/main/java/org/esa/beam/framework/datamodel/ColorPaletteInfo.java
+beam/beam-core/src/main/java/org/esa/beam/framework/datamodel/ColorPaletteDef.java
+beam/beam-core/src/main/java/org/esa/beam/glevel/BandImageMultiLevelSource.java
+
+RGB:
+beam/beam-core/src/main/java/org/esa/beam/framework/datamodel/RGBImageProfileManager.java
+
+
+Gridlines
+beam/beam-core/src/main/java/org/esa/beam/framework/datamodel/GeoPos.java
+beam/beam-core/src/main/java/org/esa/beam/framework/datamodel/Graticule.java
+beam/beam-core/src/main/java/org/esa/beam/glayer/GraticuleLayer.java
+beam/beam-core/src/main/java/org/esa/beam/glayer/GraticuleLayerType.java
+
+
+Masks:
+https://github.com/seadas/beam/blob/master/beam-core/src/main/java/org/esa/beam/framework/datamodel/Mask.java
+
+Text Annotation:
+https://github.com/seadas/beam/blob/master/beam-core/src/main/java/org/esa/beam/framework/datamodel/Product.java
+https://github.com/seadas/beam/blob/master/beam-core/src/main/java/org/esa/beam/framework/datamodel/TextAnnotationDescriptor.java
+https://github.com/seadas/beam/blob/master/beam-core/src/main/resources/META-INF/services/org.esa.beam.framework.datamodel.PlacemarkDescriptor
+
+Statistics:
+https://github.com/seadas/beam/blob/master/beam-core/src/main/java/org/esa/beam/framework/datamodel/Stx.java
+https://github.com/seadas/beam/blob/master/beam-core/src/main/java/org/esa/beam/framework/datamodel/StxFactory.java
+https://github.com/seadas/beam/blob/master/beam-core/src/main/java/org/esa/beam/framework/datamodel/SummaryStxOp.java
+
+
+Utils:
+https://github.com/seadas/beam/blob/master/beam-core/src/main/java/org/esa/beam/util/PropertyMap.java
+https://github.com/seadas/beam/blob/master/beam-core/src/main/java/org/esa/beam/util/ResourceInstaller.java
+https://github.com/seadas/beam/blob/master/beam-core/src/main/java/org/esa/beam/util/StringUtils.java
+
+Band Filters:
+https://github.com/seadas/beam/blob/master/beam-visat-rcp/src/main/java/org/esa/beam/visat/actions/imgfilter/CreateFilteredBandDialog.java
+https://github.com/seadas/beam/blob/master/beam-visat-rcp/src/main/java/org/esa/beam/visat/actions/imgfilter/CreateFilteredBandAction.java
+https://github.com/seadas/beam/blob/master/beam-visat-rcp/src/main/java/org/esa/beam/visat/actions/imgfilter/model/StandardFilters.java
+
+Time Series
+https://github.com/seadas/beam/blob/master/beam-time-series-tool/src/main/java/org/esa/beam/timeseries/core/timeseries/datamodel/AbstractTimeSeries.java
+
+StatisticsOp
+https://github.com/seadas/beam/blob/master/beam-statistics-op/
+
+
+
+OTHER:
+
+A whole lot here:
+https://github.com/seadas/beam/blob/master/beam-visat-rcp/src/main/java/org/esa/beam/visat/toolviews/
+https://github.com/seadas/beam/blob/master/beam-ui/src/main/java/org/esa/beam/framework/ui/
+https://github.com/seadas/beam/tree/master/beam-ui/src/main/resources/auxdata/
+https://github.com/seadas/beam/blob/master/beam-ui/src/main/resources/org/esa/beam/resources/images/icons
+
+https://github.com/seadas/beam/blob/master/beam-visat-rcp/src/main/java/org/esa/beam/gpf/operators/mosaic/
+https://github.com/seadas/beam/blob/master/beam-visat-rcp/src/main/java/org/esa/beam/gpf/operators/reproject/
+
+
+https://github.com/seadas/beam/blob/master/beam-visat-rcp/src/main/java/org/esa/beam/visat/VisatApp.java
+https://github.com/seadas/beam/blob/master/beam-visat-rcp/src/main/java/org/esa/beam/visat/actions/ShowWorldMapOverlayAction.java
+https://github.com/seadas/beam/blob/master/beam-visat-rcp/src/main/java/org/esa/beam/visat/actions/ShowImageViewRGBAction.java
+https://github.com/seadas/beam/blob/master/beam-visat-rcp/src/main/java/org/esa/beam/visat/actions/InsertFigureInteractorInterceptor.java
+https://github.com/seadas/beam/blob/master/beam-visat-rcp/src/main/java/org/esa/beam/visat/actions/ExportImageAction.java
+https://github.com/seadas/beam/blob/master/beam-visat-rcp/src/main/java/org/esa/beam/visat/actions/ExportGeometryAction.java
+https://github.com/seadas/beam/blob/master/beam-visat-rcp/src/main/java/org/esa/beam/visat/actions/CreateSubsetFromViewAction.java
+https://github.com/seadas/beam/blob/master/beam-visat-rcp/src/main/java/org/esa/beam/visat/actions/AbstractExportImageAction.java
+https://github.com/seadas/beam/blob/master/beam-visat-rcp/src/main/java/org/esa/beam/visat/dialogs/BandMathsDialog.java
+https://github.com/seadas/beam/blob/master/beam-visat-rcp/src/main/java/org/esa/beam/visat/plugins/VersionCheckerVPI.java
+
+
+https://github.com/seadas/beam/blob/master/beam-visat-rcp/src/main/resources/module.xml
+
+
+https://github.com/seadas/beam/blob/master/beam-ui/src/main/java/com/bc/swing/desktop/TabbedDesktopPane.java
+
+
+
+
+
+A few Useful Commits:
+Rewording of many GUI title bars
+https://github.com/seadas/beam/commit/0386861f4e33b71539441529d1a5d49565f8dc02#diff-28345a1ae3c0479d830e1783df4d1d85
+
+https://github.com/seadas/beam/commit/6893aac961788c7ff19dbfa0b8b124a71d0b98d7#diff-7ff044ea6bb68c09db8a6dd610f35b99
+https://github.com/seadas/beam/commit/ad9fdb5cedfe29075d0a77b4f1ebb55940848788#diff-49160ea40b73b18273bcd77922061c85
+
+

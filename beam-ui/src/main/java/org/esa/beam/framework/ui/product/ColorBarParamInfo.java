@@ -4,13 +4,22 @@ import org.esa.beam.framework.datamodel.ImageLegend;
 
 import java.awt.*;
 
-/**
- * Created with IntelliJ IDEA.
- * User: knowles
- * Date: 8/8/14
- * Time: 1:17 PM
- * To change this template use File | Settings | File Templates.
+/* NASA SeaDAS CODE
+ * Created by Daniel Knowles for SeaDAS 7.x
+ * This stores information used in creating the color bar with the Color Bar GUI
+ * The Color Bar GUI stores and retrieves its fields using this object (see ExportLegendImageAction)
+ * This object is physically stored in ProductSceneView and remains active as long as View Window is open
+ * The metadata is not currently stored in the Sessions logic
+ *
  */
+
+//todo Sessions Metadata
+/* The metadata involved with this is not stored in the DIMAP file so the retention of the color bar field values
+ * for a each open window will be lost in a loaded session.
+  */
+
+
+
 public class ColorBarParamInfo {
 
     public static final String HORIZONTAL_STR = "Horizontal";

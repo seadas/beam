@@ -14,6 +14,14 @@
  * with this program; if not, see http://www.gnu.org/licenses/
  */
 
+// SeaDAS Revision Summary
+// Revised by Daniel Knowles (as of SeaDAS 7.5 and/or earlier revisions)
+// Revisions include:
+//      - Make No-data layer the last layer in the stack
+//      - Added many layer configuration properties associated with new map gridlines fields
+//      - moved graticule name location to ProductSceneView.GRATICULE_LAYER_NAME
+
+
 package org.esa.beam.framework.ui.product;
 
 import com.bc.ceres.binding.PropertySet;
