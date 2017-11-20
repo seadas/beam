@@ -804,6 +804,11 @@
 
 
     <repositories>
+        <repository>
+            <id>jide</id>
+            <name>Internal JIDE repository</name>
+            <url>https://mvnrepository.com/artifact/</url>
+        </repository>
         <!--<repository>-->
             <!--<id>jide</id>-->
             <!--<name>Internal JIDE repository</name>-->
