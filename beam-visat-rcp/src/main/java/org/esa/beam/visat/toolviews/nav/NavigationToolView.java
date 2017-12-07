@@ -569,8 +569,8 @@ public class NavigationToolView extends AbstractToolView {
 
             double newX = maxVisibleModelBounds.getMinX() - 0.5*(zoomImagePercent - 100)/100.0 * diffX;
             double newY = maxVisibleModelBounds.getMinY() - 0.5*(zoomImagePercent - 100)/100.0 * diffY;
-            double newWidth = maxVisibleModelBounds.getWidth() * zoomImagePercent;
-            double newHeight = maxVisibleModelBounds.getHeight() * zoomImagePercent;
+            double newWidth = maxVisibleModelBounds.getWidth() * zoomImagePercent/100;
+            double newHeight = maxVisibleModelBounds.getHeight() * zoomImagePercent/100;
 
 
             Rectangle2D rect = new Rectangle2D.Double(newX, newY, newWidth, newHeight);
