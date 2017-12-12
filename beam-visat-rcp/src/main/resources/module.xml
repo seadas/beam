@@ -2014,33 +2014,211 @@
             <shortDescr>SeaDAS help</shortDescr>
             <description>Opens the SeaDAS help browser.</description>
             <helpId>visat</helpId>
-            <placeBefore>helpOCSSW</placeBefore>
+            <placeBefore>helpCookbooks</placeBefore>
         </action>
 
+
+
+
+
         <action>
-            <id>helpOCSSW</id>
+            <id>helpCookbooks</id>
+            <text>     Cookbooks</text>
             <parent>help</parent>
-            <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
-            <text>     OCSSW</text>
-            <separatorAfter>false</separatorAfter>
-            <shortDescr>OCSSW</shortDescr>
-            <description>Opens the SeaDAS help browser.</description>
-            <helpId>processOverview</helpId>
-            <placeBefore>helpGptCookbook</placeBefore>
+            <class>org.esa.beam.visat.actions.ActionGroup</class>
+            <description>Opens the SeaDAS help browser</description>
+            <helpId>helpMoreTopics</helpId>
+            <sortChildren>true</sortChildren>
+            <placeBefore>helpOCSSW</placeBefore>
         </action>
 
 
         <action>
             <id>helpGptCookbook</id>
-            <parent>help</parent>
+            <parent>helpCookbooks</parent>
             <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
-            <text>     GPT Cookbook</text>
+            <text>GPT Cookbook</text>
             <separatorAfter>false</separatorAfter>
             <shortDescr>GPT Cookbook</shortDescr>
             <description>Opens the SeaDAS help browser.</description>
             <helpId>gptCookbook</helpId>
             <placeBefore>helpCommonTools</placeBefore>
         </action>
+
+
+        <action>
+            <id>helpOcsswCookbook</id>
+            <parent>helpCookbooks</parent>
+            <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
+            <text>OCSSW Cookbook</text>
+            <separatorAfter>false</separatorAfter>
+            <shortDescr>OCSSW Cookbook</shortDescr>
+            <description>Opens the SeaDAS help browser.</description>
+            <helpId>ocsswCookbook</helpId>
+            <placeBefore>helpGptCookbook</placeBefore>
+        </action>
+
+
+        <action>
+            <id>helpOCSSW</id>
+            <text>     OCSSW</text>
+            <parent>help</parent>
+            <class>org.esa.beam.visat.actions.ActionGroup</class>
+            <description>Opens the SeaDAS help browser</description>
+            <helpId>helpMoreTopics</helpId>
+            <sortChildren>false</sortChildren>
+            <placeBefore>helpCommonTools</placeBefore>
+        </action>
+
+
+        <action>
+            <id>helpOCSSWAll</id>
+            <parent>helpOCSSW</parent>
+            <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
+            <text>All processors ...</text>
+            <separatorAfter>true</separatorAfter>
+            <shortDescr>OCSSW</shortDescr>
+            <description>Opens the SeaDAS help browser.</description>
+            <helpId>processOverview</helpId>
+            <placeBefore>helpOCSSWextractor</placeBefore>
+        </action>
+
+
+
+        <action>
+            <id>helpOCSSWextractor</id>
+            <parent>helpOCSSW</parent>
+            <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
+            <text>extractors</text>
+            <separatorAfter>false</separatorAfter>
+            <shortDescr>OCSSW</shortDescr>
+            <description>Opens the SeaDAS help browser.</description>
+            <helpId>extractor</helpId>
+            <placeBefore>helpOCSSWl1mapgen</placeBefore>
+        </action>
+
+
+        <action>
+            <id>helpOCSSWl1mapgen</id>
+            <parent>helpOCSSW</parent>
+            <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
+            <text>l1mapgen</text>
+            <separatorAfter>false</separatorAfter>
+            <shortDescr>OCSSW</shortDescr>
+            <description>Opens the SeaDAS help browser.</description>
+            <helpId>l1mapgen</helpId>
+            <placeBefore>helpOCSSWl1brsgen</placeBefore>
+        </action>
+
+
+        <action>
+            <id>helpOCSSWl1brsgen</id>
+            <parent>helpOCSSW</parent>
+            <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
+            <text>l1brsgen</text>
+            <separatorAfter>false</separatorAfter>
+            <shortDescr>OCSSW</shortDescr>
+            <description>Opens the SeaDAS help browser.</description>
+            <helpId>l1brsgen</helpId>
+            <placeBefore>helpOCSSWl2gen</placeBefore>
+        </action>
+
+
+
+        <action>
+            <id>helpOCSSWl2gen</id>
+            <parent>helpOCSSW</parent>
+            <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
+            <text>l2gen</text>
+            <separatorAfter>false</separatorAfter>
+            <shortDescr>OCSSW</shortDescr>
+            <description>Opens the SeaDAS help browser.</description>
+            <helpId>l2gen</helpId>
+            <placeBefore>helpOCSSWl2bin</placeBefore>
+        </action>
+
+
+
+        <action>
+            <id>helpOCSSWl2bin</id>
+            <parent>helpOCSSW</parent>
+            <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
+            <text>l2bin</text>
+            <separatorAfter>false</separatorAfter>
+            <shortDescr>OCSSW</shortDescr>
+            <description>Opens the SeaDAS help browser.</description>
+            <helpId>l2bin</helpId>
+            <placeBefore>helpOCSSWl2mapgen</placeBefore>
+        </action>
+
+
+        <action>
+            <id>helpOCSSWl2mapgen</id>
+            <parent>helpOCSSW</parent>
+            <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
+            <text>l2mapgen</text>
+            <separatorAfter>false</separatorAfter>
+            <shortDescr>OCSSW</shortDescr>
+            <description>Opens the SeaDAS help browser.</description>
+            <helpId>l2mapgen</helpId>
+            <placeBefore>helpOCSSWl2brsgen</placeBefore>
+        </action>
+
+
+        <action>
+            <id>helpOCSSWl2brsgen</id>
+            <parent>helpOCSSW</parent>
+            <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
+            <text>l2brsgen</text>
+            <separatorAfter>false</separatorAfter>
+            <shortDescr>OCSSW</shortDescr>
+            <description>Opens the SeaDAS help browser.</description>
+            <helpId>l2brsgen</helpId>
+            <placeBefore>helpOCSSWl3bin</placeBefore>
+        </action>
+
+
+        <action>
+            <id>helpOCSSWl3bin</id>
+            <parent>helpOCSSW</parent>
+            <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
+            <text>l3bin</text>
+            <separatorAfter>false</separatorAfter>
+            <shortDescr>OCSSW</shortDescr>
+            <description>Opens the SeaDAS help browser.</description>
+            <helpId>l3bin</helpId>
+            <placeBefore>helpOCSSWl3mapgen</placeBefore>
+        </action>
+
+        <action>
+            <id>helpOCSSWl3mapgen</id>
+            <parent>helpOCSSW</parent>
+            <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
+            <text>l3mapgen</text>
+            <separatorAfter>false</separatorAfter>
+            <shortDescr>OCSSW</shortDescr>
+            <description>Opens the SeaDAS help browser.</description>
+            <helpId>l3mapgen</helpId>
+            <placeBefore>helpOCSSWmultilevel_processor</placeBefore>
+        </action>
+
+
+
+
+        <action>
+            <id>helpOCSSWmultilevel_processor</id>
+            <parent>helpOCSSW</parent>
+            <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
+            <text>multilevel_processor</text>
+            <separatorBefore>true</separatorBefore>
+            <shortDescr>OCSSW</shortDescr>
+            <description>Opens the SeaDAS help browser.</description>
+            <helpId>multilevel_processor.py</helpId>
+            <placeAfter>helpOCSSWl3mapgen</placeAfter>
+        </action>
+
+
+
 
         <action>
             <id>helpCommonTools</id>
@@ -2052,6 +2230,20 @@
             <sortChildren>false</sortChildren>
             <placeBefore>helpCommonTopics</placeBefore>
         </action>
+
+
+        <action>
+            <id>helpToolsMore</id>
+            <parent>helpCommonTools</parent>
+            <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
+            <text>All Tools ...</text>
+            <shortDescr>SeaDAS Help: Main</shortDescr>
+            <description>Opens the SeaDAS help browser.</description>
+            <helpId>visat</helpId>
+            <separatorAfter>true</separatorAfter>
+            <placeBefore>helpToolsBathymetry</placeBefore>
+        </action>
+
 
 
         <action>
@@ -2156,22 +2348,10 @@
             <shortDescr>SeaDAS Help: Statistics</shortDescr>
             <description>Opens the SeaDAS help browser</description>
             <helpId>statisticsDialog</helpId>
-            <placeBefore>helpToolsMore</placeBefore>
+            <placeAfter>helpToolsReproject</placeAfter>
         </action>
 
 
-
-        <action>
-            <id>helpToolsMore</id>
-            <parent>helpCommonTools</parent>
-            <class>org.esa.beam.visat.actions.HelpTopicsAction</class>
-            <text>All Tools ...</text>
-            <shortDescr>SeaDAS Help: Main</shortDescr>
-            <description>Opens the SeaDAS help browser.</description>
-            <helpId>visat</helpId>
-            <separatorBefore>true</separatorBefore>
-            <placeAfter>helpToolsStatistics</placeAfter>
-        </action>
 
 
 
@@ -2388,7 +2568,7 @@
         <action>
             <id>WebHelpOCHome</id>
             <parent>help</parent>
-            <class>org.esa.beam.visat.actions.WebHelpOCHomeAction</class>
+            <class>org.esa.beam.visat.actions.HelpOceanColorWebAction</class>
             <text>NASA OceanColor Web</text>
             <shortDescr>Opens the NASA OceanColor home page.</shortDescr>
             <description>Opens the NASA OceanColor home page with the default web browser.</description>
@@ -2401,10 +2581,11 @@
         <action>
             <id>WebHelpOCForum</id>
             <parent>help</parent>
-            <class>org.esa.beam.visat.actions.WebHelpOCForumPage</class>
+            <class>org.esa.beam.visat.actions.HelpOceanColorWebAction</class>
             <text>     OceanColor Forum</text>
             <shortDescr>Opens the OceanColor forum web page.</shortDescr>
             <description>Opens he OceanColor forum web page with the default web browser.</description>
+            <helpId>forum/oceancolor/forum_show.pl</helpId>
             <placeBefore>WebHelpDataAccess</placeBefore>
 
         </action>

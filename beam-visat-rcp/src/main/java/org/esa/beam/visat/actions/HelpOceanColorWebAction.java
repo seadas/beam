@@ -15,7 +15,7 @@ import java.net.URI;
  * Time: 2:19 PM
  * To change this template use File | Settings | File Templates.
  */
-public class WebHelpOCForumPage extends ExecCommand {
+public class HelpOceanColorWebAction extends ExecCommand {
     @Override
     public void updateState(final CommandEvent event) {
         setEnabled(Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE));
@@ -33,7 +33,7 @@ public class WebHelpOCForumPage extends ExecCommand {
 
         try {
             final Desktop desktop = Desktop.getDesktop();
-            desktop.browse(URI.create(getHelpId()));
+            desktop.browse(URI.create("https://oceancolor.gsfc.nasa.gov/" + getHelpId()));
         } catch (IOException e) {
             // TODO - handle
         } catch (UnsupportedOperationException e) {
