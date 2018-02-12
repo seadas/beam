@@ -2070,7 +2070,6 @@ public class VisatPreferencesDialog extends ConfigDialog {
 
             param = new Parameter(GraticuleLayerType.PROPERTY_NAME_RES_LAT, GraticuleLayerType.DEFAULT_RES_LAT);
             param.getProperties().setLabel(GraticuleLayerType.PROPERTY_LABEL_RES_LAT); /*I18N*/
-            param.getProperties().setLabel(GraticuleLayerType.PROPERTY_LABEL_TEXT_ROTATION_NORTH_SOUTH); /*I18N*/
             param.addParamChangeListener(paramChangeListener);
             param.getProperties().setMinValue(0.0);
             param.getProperties().setMaxValue(90.0);
@@ -2276,11 +2275,11 @@ public class VisatPreferencesDialog extends ConfigDialog {
             addParamToPane(rightPanel, param, gbcRight);
             gbcRight.gridy++;
 
-            param = getConfigParam(GraticuleLayerType.PROPERTY_NAME_TEXT_ROTATION_NORTH_SOUTH);
+            param = getConfigParam(GraticuleLayerType.PROPERTY_NAME_TEXT_ROTATION_WEST_EAST);
             addParamToPane(rightPanel, param, gbcRight);
             gbcRight.gridy++;
 
-            param = getConfigParam(GraticuleLayerType.PROPERTY_NAME_TEXT_ROTATION_WEST_EAST);
+            param = getConfigParam(GraticuleLayerType.PROPERTY_NAME_TEXT_ROTATION_NORTH_SOUTH);
             addParamToPane(rightPanel, param, gbcRight);
             gbcRight.gridy++;
 

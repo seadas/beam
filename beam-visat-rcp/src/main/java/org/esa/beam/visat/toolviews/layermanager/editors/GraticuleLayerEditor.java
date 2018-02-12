@@ -211,12 +211,7 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
 
 
 
-        PropertyDescriptor vd16 = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NAME_TEXT_ROTATION_NORTH_SOUTH, Integer.class);
-        vd16.setDefaultValue(GraticuleLayerType.DEFAULT_TEXT_ROTATION_NORTH_SOUTH);
-        vd16.setDisplayName(GraticuleLayerType.PROPERTY_LABEL_TEXT_ROTATION_NORTH_SOUTH);
-        vd16.setDefaultConverter();
-        vd16.setValueRange(new ValueRange(0, 90));
-        addPropertyDescriptor(vd16);
+
 
 
         PropertyDescriptor vd18 = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NAME_TEXT_ROTATION_WEST_EAST, Integer.class);
@@ -225,6 +220,13 @@ public class GraticuleLayerEditor extends AbstractLayerConfigurationEditor {
         vd18.setDefaultConverter();
         vd18.setValueRange(new ValueRange(0, 90));
         addPropertyDescriptor(vd18);
+
+        PropertyDescriptor vd16 = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NAME_TEXT_ROTATION_NORTH_SOUTH, Integer.class);
+        vd16.setDefaultValue(GraticuleLayerType.DEFAULT_TEXT_ROTATION_NORTH_SOUTH);
+        vd16.setDisplayName(GraticuleLayerType.PROPERTY_LABEL_TEXT_ROTATION_NORTH_SOUTH);
+        vd16.setDefaultConverter();
+        vd16.setValueRange(new ValueRange(0, 90));
+        addPropertyDescriptor(vd16);
 
 
         PropertyDescriptor vd11 = new PropertyDescriptor(GraticuleLayerType.PROPERTY_NAME_TEXT_FONT_SIZE, Integer.class);

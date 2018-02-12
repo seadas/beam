@@ -84,11 +84,11 @@ public class GraticuleLayerType extends LayerType {
     public static final String PROPERTY_LABEL_RESET_TO_DEFAULTS = "RESTORE DEFAULTS (Map Gridline Preferences)";
     public static final String PROPERTY_LABEL_TEXT_ENABLED_NORTH = "Show Longitude Labels - North";
     public static final String PROPERTY_LABEL_TEXT_ENABLED_SOUTH = "Show Longitude Labels - South";
-    public static final String PROPERTY_LABEL_TEXT_ENABLED_WEST = "Show Longitude Labels - West";
-    public static final String PROPERTY_LABEL_TEXT_ENABLED_EAST = "Show Longitude Labels - East";
+    public static final String PROPERTY_LABEL_TEXT_ENABLED_WEST = "Show Latitude Labels - West";
+    public static final String PROPERTY_LABEL_TEXT_ENABLED_EAST = "Show Latitude Labels - East";
     public static final String PROPERTY_LABEL_TEXT_CORNER_TOP_LON_ENABLED =  "Show Longitude Corner Labels - Top";
-    public static final String PROPERTY_LABEL_TEXT_CORNER_LEFT_LAT_ENABLED = "Show Longitude Corner Labels - Left";
-    public static final String PROPERTY_LABEL_TEXT_CORNER_RIGHT_LAT_ENABLED = "Show Longitude Corner Labels - Right";
+    public static final String PROPERTY_LABEL_TEXT_CORNER_LEFT_LAT_ENABLED = "Show Latitude Corner Labels - Left";
+    public static final String PROPERTY_LABEL_TEXT_CORNER_RIGHT_LAT_ENABLED = "Show Latitude Corner Labels - Right";
     public static final String PROPERTY_LABEL_TEXT_CORNER_BOTTOM_LON_ENABLED =  "Show Longitude Corner Labels - Bottom";
     public static final String PROPERTY_LABEL_TICKMARK_ENABLED = "Include Tick Marks (with labels)";
     public static final String PROPERTY_LABEL_TICKMARK_INSIDE = "Put Tick Marks Inside";
