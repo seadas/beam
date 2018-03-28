@@ -805,27 +805,9 @@
 
     <repositories>
         <repository>
-            <id>jide</id>
-            <name>Internal JIDE repository</name>
-            <url>https://mvnrepository.com/artifact/</url>
-        </repository>
-        <!--<repository>-->
-            <!--<id>jide</id>-->
-            <!--<name>Internal JIDE repository</name>-->
-            <!--<url>https://seadasdev401.domain.pub/mvn-seadas/</url>-->
-        <!--</repository>-->
-        <repository>
-            <id>bc-mvn</id>
-            <name>Public Maven Repository at Brockmann Consult</name>
-            <url>http://www.brockmann-consult.de/mvn/os</url>
-            <releases>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-            </snapshots>
+            <id>seadas-repo</id>
+            <name>NASA SeaDAS repository</name>
+            <url>https://seadas.gsfc.nasa.gov/mvn-seadas</url>
         </repository>
         <repository>
             <id>maven2-repository.dev.java.net</id>
@@ -846,17 +828,9 @@
 
     <pluginRepositories>
         <pluginRepository>
-            <id>bc-mvn-repo</id>
-            <name>Public Maven Repository at Brockmann Consult</name>
-            <url>http://www.brockmann-consult.de/mvn/os</url>
-            <releases>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-                <checksumPolicy>warn</checksumPolicy>
-            </snapshots>
+            <id>seadas-repo</id>
+            <name>NASA SeaDAS repository</name>
+            <url>https://seadas.gsfc.nasa.gov/mvn-seadas</url>
         </pluginRepository>
         <pluginRepository>
             <id>apache.org</id>
