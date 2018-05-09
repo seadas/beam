@@ -2427,29 +2427,43 @@
             <parent>help</parent>
             <class>org.esa.beam.visat.actions.ActionGroup</class>
             <text>     Configuration</text>
-            <sortChildren>true</sortChildren>
+            <sortChildren>false</sortChildren>
             <placeBefore>WebHelpSeaDASForum</placeBefore>
         </action>
 
 
-
-        <action>
-            <id>WebHelpSeaDASRequirements</id>
-            <parent>WebHelpSeaDASConfiguration</parent>
-            <class>org.esa.beam.visat.actions.WebHelpSeaDASRequirementsAction</class>
-            <text>Requirements</text>
-            <shortDescr>Opens the SeaDAS Requirements webpage</shortDescr>
-            <description>Opens the SeaDAS Requirements webpage with the default web browser.</description>
-        </action>
 
 
         <action>
             <id>WebHelpSeaDASInstallation</id>
             <parent>WebHelpSeaDASConfiguration</parent>
             <class>org.esa.beam.visat.actions.WebHelpSeaDASInstallationAction</class>
-            <text>Installation</text>
+            <text>SeaDAS Installation</text>
             <shortDescr>Opens the SeaDAS Installation webpage</shortDescr>
             <description>Opens the SeaDAS Installation webpage with the default web browser.</description>
+            <placeBefore>WebHelpSeaDASRequirements</placeBefore>
+        </action>
+
+
+        <action>
+            <id>WebHelpSeaDASRequirements</id>
+            <parent>WebHelpSeaDASConfiguration</parent>
+            <class>org.esa.beam.visat.actions.WebHelpSeaDASRequirementsAction</class>
+            <text>System Requirements</text>
+            <shortDescr>Opens the SeaDAS Requirements webpage</shortDescr>
+            <description>Opens the SeaDAS Requirements webpage with the default web browser.</description>
+            <placeBefore>WebHelpSeaDASClientServerConfiguration</placeBefore>
+        </action>
+
+
+        <action>
+            <id>WebHelpSeaDASClientServerConfiguration</id>
+            <parent>WebHelpSeaDASConfiguration</parent>
+            <class>org.esa.beam.visat.actions.WebHelpSeaDASClientServerConfigurationAction</class>
+            <text>OCSSW Client Server Configuration</text>
+            <shortDescr>Opens the SeaDAS OCSSW Client Server Coniguration webpage</shortDescr>
+            <description>Opens the SeaDAS OCSSW Client Server Coniguration webpage with the default web browser.</description>
+            <placeAfter>WebHelpSeaDASRequirements</placeAfter>
         </action>
 
 
